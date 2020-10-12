@@ -70,6 +70,11 @@ public class User extends Entity implements Serializable {
     }
 
     @Override
+    public boolean isItem() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return null;
     }
