@@ -18,7 +18,7 @@ public class User extends Entity implements Serializable {
         return lists;
     }
 
-    public void setLists(List lists) {
+    public void setLists(List<ShopingList> lists) {
         this.lists = lists;
     }
 
@@ -52,6 +52,22 @@ public class User extends Entity implements Serializable {
         if(list != null) removeList(list);
     }
 
+    public void addToList(ShopingList list){
+        this.lists.add(list);
+    }
+
+    public void addAllToList(List<ShopingList> lists){
+        this.lists.addAll(lists);
+    }
+
+    public void createList(String name){
+        lists.add(new ShopingList(name));
+    }
+
+    public void createList(ShopingList list){
+        lists.add(list);
+    }
+
     public User(String name, String password, List lists) {
         this.name = name;
         this.password = password;
@@ -67,6 +83,11 @@ public class User extends Entity implements Serializable {
         //и хранить только в виде хэша
         //но пока и так сойдёт
         this.password = password;
+    }
+
+    @Override
+    public boolean isItem() {
+        return false;
     }
 
     @Override

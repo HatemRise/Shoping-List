@@ -7,14 +7,13 @@ public class Item extends Entity implements Serializable {
     private int quantity;
     private Priority priority;
     private String description;
-    private boolean active;
+    private double priorityFactor = 1;
 
     public Item(String name){
         this.name = name;
         this.quantity = 0;
         this.priority = Priority.getDefault();
         this.description = "";
-        this.active = true;
     }
 
     public Item(Item item) {
@@ -22,7 +21,6 @@ public class Item extends Entity implements Serializable {
         this.quantity = item.quantity;
         this.priority = item.priority;
         this.description = item.description;
-        this.active = item.active;
     }
 
     public int getQuantity() {
@@ -30,6 +28,7 @@ public class Item extends Entity implements Serializable {
     }
 
     public void setQuantity(int quantity) {
+        priority.getNewPriority(quantity);
         this.quantity = quantity;
     }
 
@@ -37,16 +36,16 @@ public class Item extends Entity implements Serializable {
         return priority;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public double getPriorityFactor() {
+        return priorityFactor;
+    }
+
+    public void setPriorityFactor(double priorityFactor) {
+        this.priorityFactor = priorityFactor;
     }
 
     public String getDescription() {
@@ -55,6 +54,13 @@ public class Item extends Entity implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void bought(){ this.priority = Priority.Unnecessary; }
+
+    @Override
+    public boolean isItem() {
+        return true;
     }
 
     @Override
