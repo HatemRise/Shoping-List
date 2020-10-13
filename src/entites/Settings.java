@@ -1,13 +1,19 @@
 package entites;
 import java.io.*;
 
-public class settings implements Serializable {
-    User user = null;
-    String server_id = null;
-    int update_interval = 0;
-    boolean autoupdate = true;
+public class Settings implements Serializable {
+    User user;
+    String server_id;
+    int update_interval;
+    boolean autoupdate;
 
-    public settings (User user, String server_id, int update_interval, boolean autoupdate){
+    public Settings (){
+        User user = null;
+        String server_id = null;
+        int update_interval = 0;
+        boolean autoupdate = false;
+    }
+    public Settings (User user, String server_id, int update_interval, boolean autoupdate){
         this.user = user;
         this.server_id = server_id;
         this.update_interval = update_interval;
@@ -37,12 +43,11 @@ public class settings implements Serializable {
     public void setAutoupdate(boolean value) {
         autoupdate = value;
     }
-    static void serialize(settings empObj) throws IOException {
+    static void serialize(Settings empObj) throws IOException {
         try (FileOutputStream fos = new FileOutputStream("data.obj");
              ObjectOutputStream oos = new ObjectOutputStream(fos))
         {
             oos.writeObject(empObj);
         }
-
     }
 }
