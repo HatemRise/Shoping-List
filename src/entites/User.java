@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class User extends Entity implements Serializable {
+    public final static int serialVersionUID = 3;
     private String name;
     private String password;
     private List<ShopingList> lists = new ArrayList<ShopingList>();

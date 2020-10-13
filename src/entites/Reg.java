@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Reg implements Serializable {
+    public final static int serialVersionUID = 2;
     private List<User> users = new ArrayList<User>();
     public void Reg(){
 
