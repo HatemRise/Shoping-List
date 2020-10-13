@@ -18,7 +18,7 @@ public class User extends Entity implements Serializable {
         return lists;
     }
 
-    public void setLists(List lists) {
+    public void setLists(List<ShopingList> lists) {
         this.lists = lists;
     }
 
@@ -50,6 +50,22 @@ public class User extends Entity implements Serializable {
     public void removeList(String name){
         ShopingList list = getList(name);
         if(list != null) removeList(list);
+    }
+
+    public void addToList(ShopingList list){
+        this.lists.add(list);
+    }
+
+    public void addAllToList(List<ShopingList> lists){
+        this.lists.addAll(lists);
+    }
+
+    public void createList(String name){
+        lists.add(new ShopingList(name));
+    }
+
+    public void createList(ShopingList list){
+        lists.add(list);
     }
 
     public User(String name, String password, List lists) {

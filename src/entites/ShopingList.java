@@ -45,6 +45,14 @@ public class ShopingList extends Entity implements Serializable {
         this.items = items;
     }
 
+    public Group getGroup(int index){
+        return items.get(index).isItem() ? null : (Group) items.get(index);
+    }
+
+    public Item getItem(int index){
+        return items.get(index).isItem() ? (Item) items.get(index) : null;
+    }
+
     @Override
     public boolean isItem() {
         return false;
