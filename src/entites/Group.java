@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Group extends Entity{
+    public final static int serialVersionUID = 4;
     private String name;
     List <Item> items = new ArrayList<Item>();
     Priority priority;

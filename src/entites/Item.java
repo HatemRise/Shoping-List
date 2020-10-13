@@ -3,6 +3,7 @@ package entites;
 import java.io.Serializable;
 
 public class Item extends Entity implements Serializable {
+    public final static int serialVersionUID = 5;
     private String name;
     private int quantity;
     private Priority priority;
