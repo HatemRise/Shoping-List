@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User extends Entity implements Serializable {
+public class User implements Serializable {
     public final static int serialVersionUID = 3;
     private String name;
     private String password;
-    private List<ShopingList> lists = new ArrayList<ShopingList>();
+    private List<Link> lists = new ArrayList<Link>();
 
     public User(String name, String password) {
         this.name = name;
@@ -19,57 +19,31 @@ public class User extends Entity implements Serializable {
         return lists;
     }
 
-    public void setLists(List<ShopingList> lists) {
+    public void setLists(List<Link> lists) {
         this.lists = lists;
     }
 
-    public ShopingList getList(int index){
+    public Link getList(int index){
         try {
-            return (ShopingList) lists.get(index);
+            return this.lists.get(index);
         }catch (IndexOutOfBoundsException e){
             return null;
         }
     }
 
-    public ShopingList getList(String name){
-        for(ShopingList list : lists){
-            if(list.getName().equalsIgnoreCase(name)){
-                return list;
-            }
-        }
-        return null;
-    }
-
     public void removeList(int index){
-        lists.remove(index);
+        this.lists.remove(index);
     }
 
-    public void removeList(ShopingList list){
-        lists.remove(list);
+    public void addLink(Link link){
+        this.lists.add(link);
     }
 
-    public void removeList(String name){
-        ShopingList list = getList(name);
-        if(list != null) removeList(list);
+    public void addAllToList(List<Link> link){
+        this.lists.addAll(link);
     }
 
-    public void addToList(ShopingList list){
-        this.lists.add(list);
-    }
-
-    public void addAllToList(List<ShopingList> lists){
-        this.lists.addAll(lists);
-    }
-
-    public void createList(String name){
-        lists.add(new ShopingList(name));
-    }
-
-    public void createList(ShopingList list){
-        lists.add(list);
-    }
-
-    public User(String name, String password, List lists) {
+    public User(String name, String password, List<Link> lists) {
         this.name = name;
         this.password = password;
         this.lists = lists;
@@ -86,17 +60,10 @@ public class User extends Entity implements Serializable {
         this.password = password;
     }
 
-    @Override
-    public boolean isItem() {
-        return false;
-    }
-
-    @Override
     public String getName() {
         return null;
     }
 
-    @Override
     public void setName(String name) {
 
     }
