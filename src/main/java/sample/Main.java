@@ -1,22 +1,30 @@
 package sample;
 
-import entites.Priority;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/sample.fxml"));
+        System.out.println(fxmlLoader);
+        Parent root = fxmlLoader.load();
+        Controller controller = fxmlLoader.getController();
         primaryStage.setTitle("SHOPING LIST");
         primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setOnShown(windowEvent -> {
+            try {
+                controller.show(primaryStage, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         primaryStage.show();
     }
 

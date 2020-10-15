@@ -29,7 +29,6 @@ public class Item extends Entity implements Serializable {
     }
 
     public void setQuantity(int quantity) {
-        priority.getNewPriority(quantity);
         this.quantity = quantity;
     }
 
