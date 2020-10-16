@@ -32,7 +32,14 @@ public class Reg implements Serializable {
         return true;
     }
 
-    private void authorization(User user){
-
+    public boolean addToList(User user, Link link){
+        for(User usr: users){
+            if(usr.getName().equalsIgnoreCase(user.getName()) &&
+                    usr.getPassword().equals(user.getPassword())){
+                usr.addLink(link);
+                return true;
+            }
+        }
+        return false;
     }
 }

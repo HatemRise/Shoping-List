@@ -18,6 +18,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import server.Connection;
+import server.LocalConnect;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,6 +40,7 @@ public class Controller implements Initializable {
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.settings = getSettings();
+        this.connect = new LocalConnect();
     }
 
     public void logIn() throws IOException {
