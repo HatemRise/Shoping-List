@@ -65,7 +65,7 @@ public class Item extends Entity implements Serializable {
 
     @Override
     public String getName() {
-        return null;
+        return this.name;
     }
 
     @Override

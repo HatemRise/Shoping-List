@@ -82,7 +82,7 @@ public class LocalConnect implements Connection{
 
     @Override
     public String create(User user, ShopingList shopingList) {
-        String hash = getHash(user.getName() + " " + user.getPassword()) + " "+ shopingList.getName();
+        String hash = getHash(user.getName() + " " + user.getPassword()) + "-"+ shopingList.getName() + ".shllf";
         try {
             FileOutputStream out = new FileOutputStream( serverPath + "/" + hash);
             ObjectOutputStream newShopingList = new ObjectOutputStream(out);

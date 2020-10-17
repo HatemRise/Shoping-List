@@ -1,10 +1,17 @@
 .body{
-    -fx-background-color:  linear-gradient(#e66465, #9198e5);
-    -fx-background-radius: 20px;
+    -fx-background-image: url("img/logIn.png");
+    -fx-background-size: 280;
+    -fx-background-repeat: no-repeat;
 }
 .button{
-    -fx-background-color: #f2ff0040
-    -fx-bac
+    -fx-background-color: #f2ff00B9;
+    -fx-background-radius: 0;
+}
+
+.input{
+    -jfx-unfocus-color: #000000;
+    -jfx-focus-color: #f2ff00B9;
+    -fx-prompt-text-fill: #000000;
 }
 
 .message{
