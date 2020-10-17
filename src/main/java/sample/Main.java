@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
@@ -17,7 +18,9 @@ public class Main extends Application {
         Parent root = fxmlLoader.load();
         Controller controller = fxmlLoader.getController();
         primaryStage.setTitle("SHOPING LIST");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        primaryStage.setScene(new Scene(root));
+        primaryStage.setResizable(false);
         primaryStage.setOnShown(windowEvent -> {
             try {
                 controller.show(primaryStage, null);
