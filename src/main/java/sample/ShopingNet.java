@@ -21,138 +21,194 @@ public class ShopingNet implements Connection {
     private final String HOST = "http://77.222.54.80:5606";
     CloseableHttpClient client = HttpClients.createDefault();
     ObjectOutputStream objectOutputStream;
+    CloseableHttpResponse res = null;
+    HttpEntity entity;
+    String responseString = "";
 
     @Override
-    public List<Link> logIn(User user) throws IOException {
+    public List<Link> logIn(User user) {
         HttpPost httpRequest = new HttpPost(HOST + "/api/login");
         httpRequest.setHeader("Content-Type", "text/binary");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
 
-        CloseableHttpResponse res = client.execute(httpRequest);
-        HttpEntity entity = res.getEntity();
-        String responseString = EntityUtils.toString(entity, "UTF-8");
+        try {
+            res = client.execute(httpRequest);
+            entity = res.getEntity();
+            responseString = EntityUtils.toString(entity, "UTF-8");
+        } catch (IOException e) {
+            System.out.println("Не удается выполнить запрос");
+            e.printStackTrace();
+        }
         System.out.println(responseString);
         String[] array = responseString.split(",", -1);
-        
+
         List<Link> lst = new ArrayList<>();
         for (String el : array) {
             Link link = new Link();
             link.setRemote(el);
             lst.add(link);
         }
-        EntityUtils.consume(entity);
-        res.close();
+        try {
+            EntityUtils.consume(entity);
+            res.close();
+        } catch (IOException e) {
+            System.out.println("Не удается закрыть соединение");
+            e.printStackTrace();
+        }
         return lst;
     }
 
     @Override
-    public boolean change(User user, Link link, ShopingList shopingList) throws IOException {
+    public boolean change(User user, Link link, ShopingList shopingList) {
         HttpPost httpRequest = new HttpPost(HOST + "/api/save");
         httpRequest.setHeader("Content-Type", "text/binary");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
         httpRequest.setHeader("listname", shopingList.getName());
 
-        objectOutputStream = new ObjectOutputStream(
-                new FileOutputStream("temp_serial_item"));
+        try {
+            objectOutputStream = new ObjectOutputStream(
+                    new FileOutputStream("temp_serial_item"));
 
-        Objects.requireNonNull(objectOutputStream).writeObject(shopingList);
-        objectOutputStream.close();
+            Objects.requireNonNull(objectOutputStream).writeObject(shopingList);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            System.out.println("Не удается записать файл");
+            e.printStackTrace();
+        }
 
-//        StringEntity raw = new StringEntity(getClass().getResource("itm"));
         FileEntity bin = new FileEntity(new File("temp_serial_item"));
         httpRequest.setEntity(bin);
-        CloseableHttpResponse res = client.execute(httpRequest);
+        try {
+            res = client.execute(httpRequest);
+            entity = res.getEntity();
+            EntityUtils.consume(entity);
 
-
-        System.out.println(res.getStatusLine().getStatusCode());
-        HttpEntity entity = res.getEntity();
-        EntityUtils.consume(entity);
-
-        res.close();
+            res.close();
+        } catch (IOException e) {
+            System.out.println("Не удается закрыть соединение");
+            e.printStackTrace();
+        }
         return res.getStatusLine().getStatusCode() == 200;
     }
 
 
     @Override
-    public boolean delete(User user, Link link) throws IOException {
+    public boolean delete(User user, Link link) {
         HttpPost httpRequest = new HttpPost(HOST + "/api/remove");
         httpRequest.setHeader("Content-Type", "text/binary");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
         httpRequest.setHeader("listname", link.getRemote());
-        CloseableHttpResponse res = client.execute(httpRequest);
+        CloseableHttpResponse res = null;
+        try {
+            res = client.execute(httpRequest);
+        } catch (IOException e) {
+            System.out.println("Не удается выполнить запрос");
+            e.printStackTrace();
+        }
 
-        System.out.println(res.getStatusLine());
-        HttpEntity entity = res.getEntity();
-        EntityUtils.consume(entity);
-
-        res.close();
+        System.out.println(Objects.requireNonNull(res).getStatusLine());
+        entity = res.getEntity();
+        try {
+            EntityUtils.consume(entity);
+            res.close();
+        } catch (IOException e) {
+            System.out.println("Не удается закрыть соединение");
+            e.printStackTrace();
+        }
         return res.getStatusLine().getStatusCode() == 200;
     }
 
     @Override
-    public String create(User user, ShopingList shopingList) throws IOException {
+    public String create(User user, ShopingList shopingList) {
         HttpPost httpRequest = new HttpPost(HOST + "/api/save");
         httpRequest.setHeader("Content-Type", "text/binary");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
         httpRequest.setHeader("listname", shopingList.getName());
 
-        objectOutputStream = new ObjectOutputStream(
-                new FileOutputStream("temp_serial_item"));
+        try {
+            objectOutputStream = new ObjectOutputStream(
+                    new FileOutputStream("temp_serial_item"));
+            Objects.requireNonNull(objectOutputStream).writeObject(shopingList);
+            objectOutputStream.close();
+        } catch (IOException e) {
+            System.out.println("Не удается создать файл");
+            e.printStackTrace();
+        }
 
-        Objects.requireNonNull(objectOutputStream).writeObject(shopingList);
-        objectOutputStream.close();
-
-//        StringEntity raw = new StringEntity(getClass().getResource("itm"));
         FileEntity bin = new FileEntity(new File("temp_serial_item"));
         httpRequest.setEntity(bin);
-        CloseableHttpResponse res = client.execute(httpRequest);
-
-        HttpEntity entity = res.getEntity();
-        String responseString = EntityUtils.toString(entity, "UTF-8");
-
-        EntityUtils.consume(entity);
-        res.close();
+        String responseString = "";
+        try {
+            res = client.execute(httpRequest);
+            entity = res.getEntity();
+            responseString = EntityUtils.toString(entity, "UTF-8");
+            EntityUtils.consume(entity);
+            res.close();
+        } catch (IOException e) {
+            System.out.println("Не удается закрыть соединение");
+            e.printStackTrace();
+        }
         return HOST + "/api/getlist/" + responseString;
     }
 
     @Override
-    public File getList(User user, Link link) throws IOException {
+    public File getList(User user, Link link) {
         String lnk = HOST + "/api/glist/" + link.getRemote();
         HttpGet httpRequest = new HttpGet(lnk);
         httpRequest.setHeader("Content-Type", "text/binary");
-        CloseableHttpResponse res = client.execute(httpRequest);
-        HttpEntity entity = res.getEntity();
-
-        BufferedInputStream bis = new BufferedInputStream(entity.getContent());
+        try {
+            res = client.execute(httpRequest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        HttpEntity entity = Objects.requireNonNull(res).getEntity();
         String filePath = "temp_serial_item";
-        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
-        int inByte;
-        while ((inByte = bis.read()) != -1) bos.write(inByte);
-        bis.close();
-        bos.close();
+        try {
+            BufferedInputStream bis = new BufferedInputStream(entity.getContent());
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+            int inByte;
+            while ((inByte = bis.read()) != -1) bos.write(inByte);
+            bis.close();
+            bos.close();
 
-        res.close();
+            res.close();
+        } catch (IOException e) {
+            System.out.println("Не удается закрыть соединение/Считать файл");
+            e.printStackTrace();
+        }
         return new File(filePath);
     }
 
     @Override
-    public boolean addToMyLists(User user, Link link) throws IOException {
-        HttpPost httpRequest = new HttpPost(HOST + "/api/share/"+link.getRemote());
+    public boolean addToMyLists(User user, Link link) {
+        HttpPost httpRequest = new HttpPost(HOST + "/api/share/" + link.getRemote());
         httpRequest.setHeader("Content-Type", "text/binary");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
 
-        CloseableHttpResponse res = client.execute(httpRequest);
+        try {
+            res = client.execute(httpRequest);
+        } catch (IOException e) {
+            System.out.println("Не удается выполнить запрос");
+            e.printStackTrace();
+        }
 
-        HttpEntity entity = res.getEntity();
-        String responseString = EntityUtils.toString(entity, "UTF-8");
-        EntityUtils.consume(entity);
-        res.close();
-        return responseString.contains("EEXIST") || responseString.equals("true");
+        HttpEntity entity = Objects.requireNonNull(res).getEntity();
+        String responseString = null;
+        try {
+            responseString = EntityUtils.toString(entity, "UTF-8");
+            EntityUtils.consume(entity);
+            res.close();
+        } catch (IOException e) {
+            System.out.println("Не удается закрыть соединение");
+            e.printStackTrace();
+        }
+
+        return Objects.requireNonNull(responseString).contains("EEXIST") || responseString.equals("true");
 
     }
 }
