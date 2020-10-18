@@ -25,13 +25,18 @@ public class LogInController implements Initializable {
     private JFXTextField logInField;
     @FXML
     private JFXTextField passwordField;
+    private Controller parentController;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         cancelButton.setOnAction(actionEvent -> {
             ((Stage)((Button)actionEvent.getSource()).getScene().getWindow()).close();
         });
-
+        logInButton.setOnAction(action ->{
+            parentController.setUserData(logInField.getText(), passwordField.getText());
+            parentController.connect();
+            ((Stage)((Button)action.getSource()).getScene().getWindow()).close();
+        });
     }
 
     public void setMessage(String message){
@@ -51,5 +56,9 @@ public class LogInController implements Initializable {
             stage.setX(mouseEvent.getScreenX() + xOffset);
             stage.setY(mouseEvent.getScreenY() + yOffset);
         });
+    }
+
+    public void setParentController(Controller controller) {
+        this.parentController = controller;
     }
 }

@@ -1,4 +1,8 @@
-package entites;
+package server;
+
+import entites.Entity;
+import entites.Group;
+import entites.Item;
 
 import java.io.Serializable;
 import java.util.ArrayList;
