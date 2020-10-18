@@ -2,32 +2,27 @@ package sample;
 
 import GUI.HBoxGroup;
 import GUI.HBoxItem;
-import com.jfoenix.controls.JFXListView;
-import entites.Group;
-import entites.Item;
-import entites.Settings;
-import entites.ShopingList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import com.jfoenix.controls.*;
+import entites.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import server.Connection;
 import server.LocalConnect;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -46,13 +41,31 @@ public class Controller implements Initializable {
     public Node rootNode;
     private Stage primaryStage;
     @FXML
-    private Button cancelButton;
+    private VBox itemPropertiesPane;
+    @FXML
+    private JFXTextField itemName;
+    @FXML
+    private JFXButton itemQuantityMinus;
+    @FXML
+    private JFXTextField itemQuantity;
+    @FXML
+    private JFXButton itemQuantityPlus;
+    @FXML
+    private JFXButton itemDescriptionSaveButton;
+    @FXML
+    private JFXComboBox<Priority> itemPrioritySwitcher;
+    @FXML
+    private JFXTextArea itemDescription;
+    @FXML
+    private JFXButton itemRemoveButton;
     @FXML
     JFXListView<HBox> listView;
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.settings = getSettings();
         this.connect = new LocalConnect();
+        itemPrioritySwitcher.getItems().addAll(Priority.values());
+        itemPrioritySwitcher.setPromptText("Priority");
         testDataList();
     }
 
@@ -77,7 +90,54 @@ public class Controller implements Initializable {
 
     private HBox getItemWithListener(HBoxItem item){
         item.setOnMouseClicked(mouseEvent -> {
-            System.out.println("Слушатели на итемы не реализованы");
+            itemPropertiesPane.setDisable(false);
+            itemName.setText(item.getItem().getName());
+            itemName.setOnAction(actionEvent -> {
+                item.getItem().setName(itemName.getText());
+                item.setName(itemName.getText());
+                System.out.println(item.getItem().getName());
+            });
+            itemQuantityMinus.setOnAction(action -> {
+                if(Integer.parseInt(itemQuantity.getText()) > 0) {
+                    item.getItem().setQuantity(item.getItem().getQuantity() - 1);
+                    item.setQuantity(String.valueOf(item.getItem().getQuantity()));
+                    itemQuantity.setText(String.valueOf(item.getItem().getQuantity()));
+                }
+            });
+            itemQuantity.setText(String.valueOf(item.getItem().getQuantity()));
+            itemQuantity.setOnAction(action -> {
+                item.getItem().setQuantity(itemQuantity.getText());
+                item.setQuantity(String.valueOf(item.getItem().getQuantity()));
+            });
+            itemQuantityPlus.setOnAction(action -> {
+                item.getItem().setQuantity(item.getItem().getQuantity() + 1);
+                item.setQuantity(String.valueOf(item.getItem().getQuantity()));
+                itemQuantity.setText(String.valueOf(item.getItem().getQuantity()));
+            });
+            itemPrioritySwitcher.setOnAction(action -> {
+                if(itemPrioritySwitcher.getValue() != item.getItem().getPriority()) {
+                    item.getItem().setPriority(itemPrioritySwitcher.getValue());
+                    System.out.println(item.getItem().getPriority() + " " + item.getItem().getName());
+                }
+            });
+            itemPrioritySwitcher.setValue(item.getItem().getPriority());
+            itemDescription.setText(item.getItem().getDescription());
+            itemDescription.textProperty().addListener(new ChangeListener<String>() {
+                @Override
+                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                    itemDescriptionSaveButton.setDisable(false);
+                }
+            });
+            itemDescriptionSaveButton.setOnAction(action ->{
+                item.getItem().setDescription(itemDescription.getText());
+                item.setDescription(itemDescription.getText());
+                itemDescriptionSaveButton.setDisable(true);
+            });
+            itemRemoveButton.setOnAction(action -> {
+                list.remove(item.getItem());
+                listView.getItems().remove(item);
+            });
+
         });
         return item;
     }
@@ -128,6 +188,10 @@ public class Controller implements Initializable {
 
     public void getChange(){
         System.out.println("Get change не реализовано");
+    }
+
+    public void minimizeWindow(){
+        primaryStage.setIconified(true);
     }
 
     public void show(Stage primaryStage, String message) throws IOException {

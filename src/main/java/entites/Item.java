@@ -32,6 +32,10 @@ public class Item extends Entity implements Serializable {
         this.quantity = quantity;
     }
 
+    public void setQuantity(String quantity) {
+        this.quantity = Integer.parseInt(quantity);
+    }
+
     public Priority getPriority() {
         return priority;
     }
@@ -70,6 +74,6 @@ public class Item extends Entity implements Serializable {
 
     @Override
     public void setName(String name) {
-
+        this.name = name;
     }
 }

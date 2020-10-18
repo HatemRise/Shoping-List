@@ -22,15 +22,29 @@ public class ShopingList extends Entity implements Serializable {
         this.items.add(item);
     }
 
+    public void addItem(int index, Item item){
+        this.items.add(index, item);
+    }
+
     public void addAll(List<Entity> items){
         this.items.addAll(items);
+    }
+
+    public void addAll(int index, List<Entity> items){
+        this.items.addAll(index, items);
     }
 
     public void remove(int index){
         this.items.remove(index);
     }
 
-    public void removeAll(){
+    public void remove(Entity item){
+        this.items.remove(item);
+    }
+
+    public void removeAll(List<Entity> items){this.items.removeAll(items);}
+
+    public void clear(){
         this.items.clear();
     }
 
