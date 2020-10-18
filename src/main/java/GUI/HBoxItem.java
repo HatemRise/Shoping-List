@@ -21,6 +21,12 @@ public class HBoxItem extends HBox {
         setClasses();
     }
 
+    public void getItemData(){
+        this.name = new Label(item.getName());
+        this.quantity = new Label(String.valueOf(item.getQuantity()));
+        this.description = new Text(item.getDescription());
+    }
+
     public Item getItem() {
         return item;
     }
@@ -35,6 +41,9 @@ public class HBoxItem extends HBox {
 
     public void setName(Label name) {
         this.name = name;
+    }
+    public void setName(String name) {
+        this.name.setText(name);
     }
 
     public Label getQuantity() {
@@ -53,6 +62,10 @@ public class HBoxItem extends HBox {
         this.description = description;
     }
 
+    public void setDescription(String description) {
+        this.description.setText(description);
+    }
+
     private void setClasses(){
         this.getStyleClass().add("item");
         name.getStyleClass().add("itemNameLabel");
@@ -61,5 +74,9 @@ public class HBoxItem extends HBox {
         quantity.getStyleClass().add("property");
         description.getStyleClass().add("itemDescriptionText");
         description.getStyleClass().add("property");
+    }
+
+    public void setQuantity(String quantity) {
+        this.quantity.setText(quantity);
     }
 }

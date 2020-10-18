@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
 <?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -16,10 +20,31 @@
     </stylesheets>
    <VBox prefHeight="633.0" prefWidth="925.0">
       <children>
-         <HBox opacity="0.72" prefHeight="100.0" prefWidth="200.0" style="-fx-background-color: black;" styleClass="topBox" />
+         <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" styleClass="topBox">
+            <children>
+               <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#minimizeWindow" prefHeight="24.0" prefWidth="24.0" styleClass="minimizeButton" text="-">
+                  <font>
+                     <Font name="Corbel" size="42.0" />
+                  </font>
+                  <padding>
+                     <Insets bottom="-14.0" left="-11.0" right="-11.0" top="-21.0" />
+                  </padding>
+               </JFXButton>
+               <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#exit" prefHeight="25.0" prefWidth="25.0" styleClass="closeButton" text="x">
+                  <font>
+                     <Font name="Corbel Bold" size="20.0" />
+                  </font>
+                  <padding>
+                     <Insets bottom="-6.0" top="-10.0" />
+                  </padding>
+                  <HBox.margin>
+                     <Insets />
+                  </HBox.margin>
+               </JFXButton>
+            </children></HBox>
          <HBox prefHeight="685.0" prefWidth="925.0">
             <children>
-               <VBox prefHeight="608.0" prefWidth="230.0">
+               <VBox prefHeight="608.0" prefWidth="230.0" styleClass="itemSettings">
                   <children>
                      <VBox prefHeight="211.0" prefWidth="230.0" styleClass="buttonVBox">
                         <children>
@@ -84,9 +109,65 @@
                </VBox>
                   <JFXListView fx:id="listView" prefHeight="608.0" prefWidth="475.0" styleClass="list">
             </JFXListView>
-                  <HBox>
-                      <Label text="Name" />
-                  </HBox>
+               <VBox fx:id="itemPropertiesPane" alignment="TOP_CENTER" disable="true">
+                  <children>
+                     <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="216.0" text="Item">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </Label>
+                     <JFXTextField fx:id="itemName" labelFloat="true" promptText="Name">
+                        <font>
+                           <Font size="20.0" />
+                        </font>
+                     </JFXTextField>
+                     <HBox alignment="CENTER">
+                        <children>
+                           <JFXButton fx:id="itemQuantityMinus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="44.0" prefWidth="44.0" text="-">
+                              <font>
+                                 <Font name="Corbel Bold" size="24.0" />
+                              </font>
+                           </JFXButton>
+                           <JFXTextField fx:id="itemQuantity" labelFloat="true" prefHeight="44.0" prefWidth="136.0" promptText="Quantity">
+                              <font>
+                                 <Font size="20.0" />
+                              </font>
+                           </JFXTextField>
+                           <JFXButton fx:id="itemQuantityPlus" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="44.0" prefWidth="44.0" text="+">
+                              <font>
+                                 <Font name="Corbel Bold" size="24.0" />
+                              </font>
+                           </JFXButton>
+                        </children>
+                        <VBox.margin>
+                           <Insets top="20.0" />
+                        </VBox.margin>
+                     </HBox>
+                     <JFXTextArea fx:id="itemDescription" labelFloat="true" prefHeight="80.0" prefWidth="224.0" promptText="Discription">
+                        <VBox.margin>
+                           <Insets top="20.0" />
+                        </VBox.margin>
+                     </JFXTextArea>
+                     <JFXButton fx:id="itemDescriptionSaveButton" disable="true" styleClass="itemDescriptionSaveButton" text="Save">
+                        <VBox.margin>
+                           <Insets bottom="78.0" left="171.0" top="-78.0" />
+                        </VBox.margin>
+                     </JFXButton>
+                     <HBox fx:id="itemPriorityButtonGroup" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="225.0">
+                        <VBox.margin>
+                           <Insets top="20.0" />
+                        </VBox.margin>
+                        <children>
+                           <JFXComboBox fx:id="itemPrioritySwitcher" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="227.0" />
+                        </children>
+                     </HBox>
+                     <JFXButton fx:id="itemRemoveButton" contentDisplay="CENTER" prefHeight="50.0" prefWidth="50.0" styleClass="itemRemoveButton" text=" ">
+                        <VBox.margin>
+                           <Insets top="20.0" />
+                        </VBox.margin>
+                     </JFXButton>
+                  </children>
+               </VBox>
             </children>
          </HBox>
       </children>

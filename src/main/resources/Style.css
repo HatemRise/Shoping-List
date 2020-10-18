@@ -82,6 +82,40 @@
     -fx-background-color: #00000070;
 }
 
+.closeButton{
+    -fx-background-color: #FF0000;
+    -fx-opacity: 0.7;
+}
+
+.closeButton:hover{
+    -fx-background-color: #FF0000;
+    -fx-opacity: 1;
+}
+
+.minimizeButton{
+    -fx-background-color: transparent;
+    -fx-opacity: 0.7;
+}
+
+.itemRemoveButton{
+    -fx-background-color: none;
+    -fx-background-image: url("/img/TrashBacket.png");
+    -fx-background-size: 90%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+.itemRemoveButton:hover{
+    -fx-background-color: #FF000070;
+}
+
+.topBox{
+    -fx-background-color: #000000B9;
+}
+
+.minimizeButton:hover{
+    -fx-opacity: 1;
+}
 
 
 
