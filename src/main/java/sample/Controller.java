@@ -63,7 +63,7 @@ public class Controller implements Initializable {
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         this.settings = getSettings();
-        this.connect = new LocalConnect();
+        this.connect = new ShopingNet();
         itemPrioritySwitcher.getItems().addAll(Priority.values());
         itemPrioritySwitcher.setPromptText("Priority");
         testDataList();
@@ -159,7 +159,11 @@ public class Controller implements Initializable {
     }
 
     public void logIn() throws IOException {
-        show(primaryStage, null);
+        if(settings.getUser() == null) {
+            showLogInWindow(null);
+        } else {
+            connect();
+        }
     }
 
     public void exit(){
@@ -204,24 +208,38 @@ public class Controller implements Initializable {
             primaryStage.setX(mouseEvent.getScreenX() + xOffset);
             primaryStage.setY(mouseEvent.getScreenY() + yOffset);
         });
-        if(settings.getUser() == null){
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/logIn.fxml"));
-            Parent root = fxmlLoader.load();
-            Stage logIn = new Stage();
-            Scene scene = new Scene(root);
-            logIn.setScene(scene);
-            logIn.initStyle(StageStyle.TRANSPARENT);
-            scene.setFill(Color.TRANSPARENT);
-            logIn.setTitle("Log In");
-            logIn.initOwner(primaryStage.getScene().getWindow());
-            logIn.initModality(Modality.WINDOW_MODAL);
-            logIn.show();
-            this.logInController = fxmlLoader.getController();
-            logInController.setMessage(message);
-            logInController.setScene(logIn);
-        } else {
-            System.out.println("Connect... \nTrust me. I try to connect");
+        showLogInWindow(null);
+    }
+
+    public void connect(){
+        this.settings.getUser().setLists(connect.logIn(this.settings.getUser()));
+    }
+
+    public void setUserData(String name, String password){
+        if(this.settings.getUser() != null) {
+            this.settings.getUser().setName(name);
+            this.settings.getUser().setPassword(password);
+        }else{
+            this.settings.setUser(new User(name, password));
         }
+    }
+
+    private void showLogInWindow(String message) throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/logIn.fxml"));
+        Parent root = fxmlLoader.load();
+        Stage logIn = new Stage();
+        Scene scene = new Scene(root);
+        logIn.setScene(scene);
+        logIn.initStyle(StageStyle.TRANSPARENT);
+        scene.setFill(Color.TRANSPARENT);
+        logIn.setTitle("Log In");
+        logIn.initOwner(primaryStage.getScene().getWindow());
+        logIn.initModality(Modality.WINDOW_MODAL);
+        logIn.show();
+        this.logInController = fxmlLoader.getController();
+        logInController.setMessage(message);
+        logInController.setScene(logIn);
+        logInController.setParentController(this);
     }
 
     private Settings getSettings(){
