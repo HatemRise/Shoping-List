@@ -61,7 +61,7 @@ public class User implements Serializable {
     }
 
     public String getName() {
-        return null;
+        return this.name;
     }
 
     public void setName(String name) {
