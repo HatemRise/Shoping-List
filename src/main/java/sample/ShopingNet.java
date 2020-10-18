@@ -18,7 +18,7 @@ import java.util.Objects;
 
 
 public class ShopingNet implements Connection {
-    private final String HOST = "http://localhost:5605";
+    private final String HOST = "http://77.222.54.80:5606";
     CloseableHttpClient client = HttpClients.createDefault();
     ObjectOutputStream objectOutputStream;
 
@@ -34,7 +34,7 @@ public class ShopingNet implements Connection {
         String responseString = EntityUtils.toString(entity, "UTF-8");
         System.out.println(responseString);
         String[] array = responseString.split(",", -1);
-        System.out.println(array.length);
+        
         List<Link> lst = new ArrayList<>();
         for (String el : array) {
             Link link = new Link();
