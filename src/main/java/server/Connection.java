@@ -20,5 +20,5 @@ public interface Connection {
     /**Метод для получить файл из хранилища по ссылке*/
     public File getList(User user, Link link) throws IOException;
     /**Метод для добавления существующего файла пользователю*/
-    public boolean addToMyLists(User user, Link link);
+    public boolean addToMyLists(User user, Link link) throws IOException;
 }

@@ -140,7 +140,19 @@ public class ShopingNet implements Connection {
     }
 
     @Override
-    public boolean addToMyLists(User user, Link link) {
-        return false;
+    public boolean addToMyLists(User user, Link link) throws IOException {
+        HttpPost httpRequest = new HttpPost(HOST + "/api/share/"+link.getRemote());
+        httpRequest.setHeader("Content-Type", "text/binary");
+        httpRequest.setHeader("login", user.getName());
+        httpRequest.setHeader("password", user.getPassword());
+
+        CloseableHttpResponse res = client.execute(httpRequest);
+
+        HttpEntity entity = res.getEntity();
+        String responseString = EntityUtils.toString(entity, "UTF-8");
+        EntityUtils.consume(entity);
+        res.close();
+        return responseString.contains("EEXIST") || responseString.equals("true");
+
     }
 }
