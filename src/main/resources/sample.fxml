@@ -88,6 +88,11 @@
                                  <Font name="System Bold" size="24.0" />
                               </font>
                            </JFXButton>
+                           <JFXButton fx:id="sharedList" layoutX="10.0" layoutY="45.0" maxWidth="1.7976931348623157E308" onAction="#sharedList" styleClass="button" text="Shared list" textAlignment="CENTER">
+                              <font>
+                                 <Font name="System Bold" size="24.0" />
+                              </font>
+                           </JFXButton>
                            <JFXButton layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" onAction="#getLists" styleClass="button" text="Get list" textAlignment="CENTER">
                               <font>
                                  <Font name="System Bold" size="24.0" />

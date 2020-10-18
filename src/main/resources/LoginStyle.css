@@ -2,6 +2,7 @@
     -fx-background-image: url("img/logIn.png");
     -fx-background-size: 280;
     -fx-background-repeat: no-repeat;
+    -fx-background-color: #000000;
 }
 .button{
     -fx-background-color: #f2ff00B9;

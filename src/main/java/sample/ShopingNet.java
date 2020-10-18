@@ -10,6 +10,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import server.Connection;
+import server.ShopingList;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -66,7 +67,6 @@ public class ShopingNet implements Connection {
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
         httpRequest.setHeader("listname", shopingList.getName());
-
         try {
             objectOutputStream = new ObjectOutputStream(
                     new FileOutputStream("temp_serial_item"));
@@ -84,7 +84,6 @@ public class ShopingNet implements Connection {
             res = client.execute(httpRequest);
             entity = res.getEntity();
             EntityUtils.consume(entity);
-
             res.close();
         } catch (IOException e) {
             System.out.println("Не удается закрыть соединение");

@@ -16,6 +16,7 @@ public class HBoxItem extends HBox {
         this.name = new Label(item.getName());
         this.quantity = new Label(String.valueOf(item.getQuantity()));
         this.description = new Text(item.getDescription());
+        this.description.setWrappingWidth(USE_PREF_SIZE);
         this.getStyleClass().add(item.getPriority().name());
         this.getChildren().addAll(name, quantity, description);
         setClasses();
@@ -42,6 +43,7 @@ public class HBoxItem extends HBox {
     public void setName(Label name) {
         this.name = name;
     }
+
     public void setName(String name) {
         this.name.setText(name);
     }
