@@ -1,4 +1,4 @@
-package sample;
+package server;
 
 import entites.*;
 import org.apache.http.HttpEntity;

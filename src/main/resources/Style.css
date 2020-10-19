@@ -126,3 +126,7 @@
 }
 .linkButton{
 }
+
+.jfx-rippler{
+    -jfx-rippler-fill: red;
+}

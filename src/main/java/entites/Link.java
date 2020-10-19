@@ -35,4 +35,11 @@ public class Link implements Serializable {
     public void setLocal(String local) {
         this.local = local;
     }
+
+    public String toString(){
+        if(this.remote != null){
+            return remote;
+        }
+        return local;
+    }
 }

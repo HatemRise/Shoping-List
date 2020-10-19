@@ -6,26 +6,31 @@ import com.jfoenix.controls.*;
 import entites.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import server.Connection;
 import server.ShopingList;
+import server.ShopingNet;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -58,7 +63,11 @@ public class Controller implements Initializable {
     @FXML
     private JFXButton itemRemoveButton;
     @FXML
-    JFXListView<HBox> listView;
+    private AnchorPane mainPane;
+    @FXML
+    private JFXListView<HBox> listView;
+    @FXML
+    private JFXComboBox<Link> listLinks;
     /**Метод инициализации конструктора. Вызывается при инициализации в методе main()
      * на 19 строке(fxmlLoader.load())*/
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,6 +75,9 @@ public class Controller implements Initializable {
         this.connect = new ShopingNet();
         itemPrioritySwitcher.getItems().addAll(Priority.values());
         itemPrioritySwitcher.setPromptText("Priority");
+        if(this.settings.getUser() != null) {
+            listLinks.getItems().addAll(this.settings.getUser().getLists());
+        }
         testDataList();
     }
     /**Метод, который слишком надолго прижился в этой проге.
@@ -191,22 +203,113 @@ public class Controller implements Initializable {
      * Если же файла нет, то следует его создать методом create
      * в интерфейсе connect*/
     public void saveRemote(){
-        System.out.println("Save Не реализовано!");
+        if(emptyUser()){
+            showLogInWindow("Please log in for continue");
+            return;
+        } else {
+            connect.create(this.settings.getUser(), list);
+        }
+    }
+    VBox addSelectRoot = new VBox();
+    public void addSelect(Event event){
+        if(mainPane.getChildren().contains(addSelectRoot)){
+            return;
+        }
+        JFXButton trigger = (JFXButton)event.getTarget();
+        JFXButton addItem = new JFXButton("Item");
+        JFXButton addGroup = new JFXButton("Group");
+        addItem.setPrefSize(trigger.getWidth(), trigger.getHeight());
+        addGroup.setPrefSize(trigger.getWidth(), trigger.getHeight());
+        addItem.setFont(new Font("System Bold", 24));
+        addGroup.setFont(new Font("System Bold", 24));
+        addSelectRoot.getChildren().addAll(addItem,addGroup);
+        addSelectRoot.setLayoutY(trigger.getLayoutY() - trigger.getHeight() / 2);
+        addSelectRoot.setLayoutX(trigger.getPrefWidth());
+        mainPane.getChildren().add(addSelectRoot);
+        addItem.setOnAction(actionEvent -> {
+            addSelectRoot.getChildren().clear();
+            addItem();
+        });
+        addGroup.setOnAction(actionEvent -> {
+            addSelectRoot.getChildren().clear();
+            addGroup();
+        });
+        addSelectRoot.setOnMouseExited(action -> {
+            mainPane.getChildren().remove(addSelectRoot);
+            addSelectRoot.getChildren().clear();
+        });
+    }
+
+    public void addItem(){
+        listView.getItems().add(0, getItemWithListener((HBoxItem) itemToListItem(new Item(""))));
+    }
+
+    public  void addGroup(){
+        listView.getItems().add(0, getGroupItemWithListener((HBoxGroup) groupToListItem(new Group(""))));
     }
     /**Метод для получения объекта ShopingList по ссылке, и последующем
      * отображении в таблице*/
     public void getLists(){
-        System.out.println("Get lists не реализовано!");
+        if(emptyUser()){
+            showLogInWindow("Please log in for continue");
+            return;
+        } else {
+//            connect.getList(settings.getUser(), )
+        }
     }
     /**Метод для удаления файла из удалённого репозитория по ссылке*/
     public void deleteRemoteFile(){
-        System.out.println("Delete remote file не реализовано");
+        if(emptyUser()){
+            showLogInWindow("Please log in for continue");
+            return;
+        } else {
+//            connect.delete(settings.getUser(), )
+        }
     }
     /**Метод для ресета листа. Shopinglist должен удаляться из локального
      * хранилища и скачиваться заново*/
     public void deleteAndDownload(){
-        System.out.println("Delete and Download не реализовано");
+        if(emptyUser()){
+            showLogInWindow("Please log in for continue");
+            return;
+        } else {
+//            connect.delete(settings.getUser(), )
+        }
     }
+    VBox deleteSelectRoot = new VBox();
+    public void deleteSelect(Event event){
+        if(mainPane.getChildren().contains(deleteSelectRoot)){
+            return;
+        }
+        JFXButton trigger = (JFXButton)event.getTarget();
+        JFXButton deleteRemote = new JFXButton("Remote");
+        JFXButton deleteLocal = new JFXButton("Local");
+        JFXButton deleteRemoteAndLocal = new JFXButton("All");
+        deleteRemote.setPrefSize(trigger.getWidth(), trigger.getHeight());
+        deleteLocal.setPrefSize(trigger.getWidth(), trigger.getHeight());
+        deleteRemoteAndLocal.setPrefSize(trigger.getWidth(), trigger.getHeight());
+        deleteLocal.setFont(new Font("System Bold", 24));
+        deleteRemote.setFont(new Font("System Bold", 24));
+        deleteRemoteAndLocal.setFont(new Font("System Bold", 24));
+        deleteSelectRoot.getChildren().addAll(deleteLocal,deleteRemote,deleteRemoteAndLocal);
+        deleteSelectRoot.setLayoutY(trigger.getLayoutY() - trigger.getHeight());
+        deleteSelectRoot.setLayoutX(trigger.getPrefWidth());
+        mainPane.getChildren().add(deleteSelectRoot);
+        deleteLocal.setOnAction(actionEvent -> {
+            deleteSelectRoot.getChildren().clear();
+        });
+        deleteRemote.setOnAction(actionEvent -> {
+            deleteSelectRoot.getChildren().clear();
+        });
+        deleteRemoteAndLocal.setOnAction(actionEvent -> {
+            deleteSelectRoot.getChildren().clear();
+        });
+        deleteSelectRoot.setOnMouseExited(action -> {
+            mainPane.getChildren().remove(deleteSelectRoot);
+            deleteSelectRoot.getChildren().clear();
+        });
+    }
+
     /**Метод для получения изменений из удалённой версии редактируемого
      * листа. Пока остаётся в виде заглушки, ибо логика для него ещё не
      * прописана в классах-наследниках Entity*/
@@ -277,7 +380,10 @@ public class Controller implements Initializable {
      * Если сервер навернётся и ничего не вернёт, то мы об этом даже
      * не узнаем. Держу в курсе*/
     public void connect(){
-        this.settings.getUser().setLists(connect.logIn(this.settings.getUser()));
+        List<Link> response = connect.logIn(this.settings.getUser());
+        this.settings.getUser().setLists(response);
+        listLinks.getItems().addAll(response);
+        System.out.println(response.get(0).toString());
     }
     /**Очередной костыль. На этот раз уже для получения данных из
      * Логин формы при нажатии на кнопку Log In*/
