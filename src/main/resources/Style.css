@@ -11,12 +11,18 @@
     -fx-background-color: none;
     -fx-padding: 0;
 }
-.groupTitledPane {
-    -fx-margin: 0;
+
+.cell{
+    -fx-padding: 0;
+    -fx-background-color: #ffffff00;
 }
 
-.list-view{
+.list{
     -fx-background-color: #00000050;
+}
+
+.selected{
+    -fx-background-color: #f2ff0050;
 }
 
 .cell:focused{
@@ -30,46 +36,45 @@
     -fx-text-fill: #ffffff80;
 }
 
-.property, .groupItem{
+.property, .groupCell{
     -fx-padding: 20;
     -fx-text-fill: #ffffffB9;
     -fx-font-size: 24;
 }
-
-.groupItem{
-    -fx-background-color: #000000B9;
+.scroll-pane, .scroll-pane > .viewport{
+    -fx-background-color: transparent;
 }
 
-.groupItem > .groupName{
-    -fx-text-fill: #ffffffB9;
-}
-
-.cell{
+.groupCell{
     -fx-padding: 0;
-    -fx-background-color: #ffffff00;
+    -fx-background-color: #00000070;
 }
 
-.list-view .scroll-bar:vertical .increment-arrow{}
-.list-view .scroll-bar:vertical .decrement-arrow,
-.list-view .scroll-bar:vertical .increment-button,
-.list-view .scroll-bar:vertical .decrement-button {
+.groupName{
+    -fx-text-fill: #ffffff70;
+}
+
+.scroll-bar:vertical .increment-arrow{}
+.scroll-bar:vertical .decrement-arrow,
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
     -fx-background-color: #00000050;
     -fx-border-color: transparent;
 }
 
-.list-view .scroll-bar:vertical .thumb{
+.scroll-bar:vertical .thumb{
     -fx-background-color: #ffffffB9;
     -fx-border-color: transparent;
     -fx-background-radius: 50em;
 }
 
-.list-view .scroll-bar:vertical .track{
+.scroll-bar:vertical .track{
     -fx-background-color: #00000050;
     -fx-border-color: transparent;
     -fx-background-radius: 0em;
 }
 
-.list-view .scroll-bar:vertical{
+.scroll-bar:vertical{
     -fx-background-color: #00000050;
 }
 

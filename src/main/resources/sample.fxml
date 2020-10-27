@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import GUI.ShopingListView?>
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
-<?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -118,8 +119,12 @@
                      </JFXButton>
                   </children>
                </VBox>
-                  <JFXListView fx:id="listView" layoutX="230.0" prefHeight="608.0" prefWidth="471.0" styleClass="list">
-            </JFXListView>
+               <ScrollPane hbarPolicy="NEVER" layoutX="229.0">
+                  <content>
+                        <ShopingListView fx:id="listView" prefHeight="606.0" prefWidth="471.0" styleClass="list">
+            </ShopingListView>
+                  </content>
+               </ScrollPane>
                <VBox fx:id="itemPropertiesPane" alignment="TOP_CENTER" disable="true" layoutX="701.0">
                   <children>
                      <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="216.0" text="Item">
@@ -169,9 +174,14 @@
                            <Insets top="20.0" />
                         </VBox.margin>
                         <children>
-                           <JFXComboBox fx:id="itemPrioritySwitcher" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="227.0" />
+                           <JFXComboBox fx:id="itemPrioritySwitcher" labelFloat="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="227.0" promptText="Priority" />
                         </children>
                      </HBox>
+                     <JFXComboBox fx:id="itemPrioritySwitcher1" labelFloat="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="32.0" prefWidth="227.0" promptText="Group">
+                        <VBox.margin>
+                           <Insets top="20.0" />
+                        </VBox.margin>
+                     </JFXComboBox>
                      <JFXButton fx:id="itemRemoveButton" contentDisplay="CENTER" prefHeight="50.0" prefWidth="50.0" styleClass="itemRemoveButton" text=" ">
                         <VBox.margin>
                            <Insets top="20.0" />

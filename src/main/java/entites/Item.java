@@ -8,13 +8,14 @@ public class Item extends Entity implements Serializable {
     private int quantity;
     private Priority priority;
     private String description;
-    private double priorityFactor = 1;
+    private Group group;
 
     public Item(String name){
         this.name = name;
         this.quantity = 0;
         this.priority = Priority.getDefault();
         this.description = "";
+        this.group = null;
     }
 
     public Item(Item item) {
@@ -22,6 +23,7 @@ public class Item extends Entity implements Serializable {
         this.quantity = item.quantity;
         this.priority = item.priority;
         this.description = item.description;
+        this.group = item.getGroup();
     }
 
     public int getQuantity() {
@@ -44,14 +46,6 @@ public class Item extends Entity implements Serializable {
         this.priority = priority;
     }
 
-    public double getPriorityFactor() {
-        return priorityFactor;
-    }
-
-    public void setPriorityFactor(double priorityFactor) {
-        this.priorityFactor = priorityFactor;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -62,9 +56,12 @@ public class Item extends Entity implements Serializable {
 
     public void bought(){ this.priority = Priority.Unnecessary; }
 
-    @Override
-    public boolean isItem() {
-        return true;
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
     }
 
     @Override
@@ -75,5 +72,20 @@ public class Item extends Entity implements Serializable {
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString(){
+        return "Item " + this.name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj.hashCode() == this.hashCode() ? true : false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.name.hashCode() + this.quantity + this.description.hashCode();
     }
 }

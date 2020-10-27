@@ -9,8 +9,7 @@ import org.apache.http.entity.FileEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import server.Connection;
-import server.ShopingList;
+import entites.ShopingList;
 
 import java.io.*;
 import java.util.ArrayList;

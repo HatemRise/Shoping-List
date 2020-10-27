@@ -1,7 +1,8 @@
 package sample;
 
-import GUI.HBoxGroup;
-import GUI.HBoxItem;
+import GUI.ShopingListCell;
+import GUI.ShopingListGroupCell;
+import GUI.ShopingListView;
 import com.jfoenix.controls.*;
 import entites.*;
 import javafx.beans.value.ChangeListener;
@@ -23,7 +24,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import server.Connection;
-import server.ShopingList;
+import entites.ShopingList;
 import server.ShopingNet;
 
 import java.io.FileInputStream;
@@ -65,7 +66,7 @@ public class Controller implements Initializable {
     @FXML
     private AnchorPane mainPane;
     @FXML
-    private JFXListView<HBox> listView;
+    private ShopingListView listView;
     @FXML
     private JFXComboBox<Link> listLinks;
     /**Метод инициализации конструктора. Вызывается при инициализации в методе main()
@@ -79,99 +80,90 @@ public class Controller implements Initializable {
             listLinks.getItems().addAll(this.settings.getUser().getLists());
         }
         testDataList();
+        listView.selectedProperty().addListener(action -> {
+            if (listView.getSelected() != -1) {
+                selectedItemProperty(false);
+            } else {
+                selectedItemProperty(true);
+            }
+        });
     }
     /**Метод, который слишком надолго прижился в этой проге.
      * Заполняет LitView тестовыми данными. Будет удалён, когда будет
      * возможность сделать полноценный лист*/
     private void testDataList(){
+        list = new ShopingList("test");
         for(int i = 0 ; i < 3; i++) {
             Item item = new Item("name" + i);
             item.setQuantity(12 + i);
             item.setDescription("description" + i);
-            listView.getItems().add(getItemWithListener((HBoxItem) itemToListItem(item)));
+            list.getList().add(item);
         }
-        for(int j = 0 ; j < 20; j++) {
+        for(int j = 0 ; j < 3; j++) {
             Group group = new Group("name" + String.valueOf(j));
-            for (int i = 0; i < 20; i++) {
-                Item item = new Item("name" + String.valueOf(i));
+            for (int i = 0; i < 3; i++) {
+                Item item = new Item("groupItem" + String.valueOf(i + j));
                 item.setQuantity(12 + i);
-                item.setDescription("description" + String.valueOf(i));
-                group.addItem(item);
+                item.setDescription("description" + String.valueOf(i + j));
+                item.setGroup(group);
+                list.getList().add(item);
             }
-            listView.getItems().add(getGroupItemWithListener((HBoxGroup) groupToListItem(group)));
         }
+        listView.getItems().addAll(list.getList());
     }
     /**Метод вешает слуштели на обёрнутый объект Item.
      * На вход принимает обёрнутый Item HBoxItem*/
-    private HBox getItemWithListener(HBoxItem item){
-        item.setOnMouseClicked(mouseEvent -> {
-            itemPropertiesPane.setDisable(false);
-            itemName.setText(item.getItem().getName());
-            itemName.setOnAction(actionEvent -> {
-                item.getItem().setName(itemName.getText());
-                item.setName(itemName.getText());
-                System.out.println(item.getItem().getName());
-            });
-            itemQuantityMinus.setOnAction(action -> {
-                if(Integer.parseInt(itemQuantity.getText()) > 0) {
-                    item.getItem().setQuantity(item.getItem().getQuantity() - 1);
-                    item.setQuantity(String.valueOf(item.getItem().getQuantity()));
-                    itemQuantity.setText(String.valueOf(item.getItem().getQuantity()));
-                }
-            });
-            itemQuantity.setText(String.valueOf(item.getItem().getQuantity()));
-            itemQuantity.setOnAction(action -> {
-                item.getItem().setQuantity(itemQuantity.getText());
-                item.setQuantity(String.valueOf(item.getItem().getQuantity()));
-            });
-            itemQuantityPlus.setOnAction(action -> {
-                item.getItem().setQuantity(item.getItem().getQuantity() + 1);
-                item.setQuantity(String.valueOf(item.getItem().getQuantity()));
-                itemQuantity.setText(String.valueOf(item.getItem().getQuantity()));
-            });
-            itemPrioritySwitcher.setOnAction(action -> {
-                if(itemPrioritySwitcher.getValue() != item.getItem().getPriority()) {
-                    item.getItem().setPriority(itemPrioritySwitcher.getValue());
-                    System.out.println(item.getItem().getPriority() + " " + item.getItem().getName());
-                }
-            });
-            itemPrioritySwitcher.setValue(item.getItem().getPriority());
-            itemDescription.setText(item.getItem().getDescription());
-            itemDescription.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
-                    itemDescriptionSaveButton.setDisable(false);
-                }
-            });
-            itemDescriptionSaveButton.setOnAction(action ->{
-                item.getItem().setDescription(itemDescription.getText());
-                item.setDescription(itemDescription.getText());
-                itemDescriptionSaveButton.setDisable(true);
-            });
-            itemRemoveButton.setOnAction(action -> {
-                list.remove(item.getItem());
-                listView.getItems().remove(item);
-            });
-
+    private void selectedItemProperty(boolean enable){
+        itemPropertiesPane.setDisable(enable);
+        Item item = listView.getSelected() != -1 ? listView.getSelectedItem() : new Item("NONE");
+        ShopingListCell cell = listView.getSelected() != -1 ? listView.getSelectedCell() : null;
+        itemName.setText(item.getName());
+        itemName.setOnAction(actionEvent -> {
+            item.setName(itemName.getText());
+            cell.getName().setText(itemName.getText());
         });
-        return item;
-    }
-    /**Метод вешает слушатели на обёрнутые объекты Group.
-     * На вход принимает обёрнутый Group HBoxGroup*/
-    private HBox getGroupItemWithListener(HBoxGroup listGroup){
-        listGroup.setOnMouseClicked(mouseEvent -> {
-            if(!listGroup.isExpanded()){
-                listView.getItems().addAll(listView.getItems().indexOf(listGroup) + 1, listGroup.getList());
-                listGroup.setExpandedState(true);
-            }else{
-                listView.getItems().removeAll(listGroup.getList());
-                listGroup.setExpandedState(false);
+        itemQuantityMinus.setOnAction(action -> {
+            if(Integer.parseInt(itemQuantity.getText()) > 0) {
+                item.setQuantity(item.getQuantity() - 1);
+                cell.getQuantity().setText(String.valueOf(item.getQuantity()));
+                itemQuantity.setText(String.valueOf(item.getQuantity()));
             }
         });
-        for (HBoxItem item : listGroup.getList()){
-            getItemWithListener(item);
-        }
-        return listGroup;
+        itemQuantity.setText(String.valueOf(item.getQuantity()));
+        itemQuantity.setOnAction(action -> {
+            item.setQuantity(itemQuantity.getText());
+            cell.getQuantity().setText(String.valueOf(item.getQuantity()));
+        });
+        itemQuantityPlus.setOnAction(action -> {
+            item.setQuantity(item.getQuantity() + 1);
+            cell.getQuantity().setText(String.valueOf(item.getQuantity()));
+            itemQuantity.setText(String.valueOf(item.getQuantity()));
+        });
+        itemPrioritySwitcher.setOnAction(action -> {
+            if(itemPrioritySwitcher.getValue() != item.getPriority()) {
+                item.setPriority(itemPrioritySwitcher.getValue());
+            }
+        });
+        itemPrioritySwitcher.setValue(item.getPriority());
+        itemDescription.setText(item.getDescription());
+        itemDescriptionSaveButton.setDisable(true);
+        itemDescription.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1) {
+                itemDescriptionSaveButton.setDisable(false);
+            }
+        });
+        itemDescriptionSaveButton.setOnAction(action ->{
+            item.setDescription(itemDescription.getText());
+            cell.getDescription().setText(itemDescription.getText());
+            itemDescriptionSaveButton.setDisable(true);
+        });
+        itemRemoveButton.setOnAction(action -> {
+            list.remove(item);
+            listView.getItems().remove(item);
+            listView.setSelected(-1);
+        });
+
     }
     /**Метод для вызова логин окна, или метода для коннекта,
      * в зависимости от нличия пользовательских данных*/
@@ -241,11 +233,12 @@ public class Controller implements Initializable {
     }
 
     public void addItem(){
-        listView.getItems().add(0, getItemWithListener((HBoxItem) itemToListItem(new Item(""))));
+        listView.getItems().add(0, new Item(""));
+        listView.setSelected(0);
     }
 
     public  void addGroup(){
-        listView.getItems().add(0, getGroupItemWithListener((HBoxGroup) groupToListItem(new Group(""))));
+        listView.getCells().add(0, new ShopingListGroupCell("Input your name"));
     }
     /**Метод для получения объекта ShopingList по ссылке, и последующем
      * отображении в таблице*/
@@ -437,15 +430,5 @@ public class Controller implements Initializable {
         } catch (Exception ex) {
             return new Settings();
         }
-    }
-    /**Метод для обёртки объекта Item, чтобы тот
-     * мог отобржаться в GUI*/
-    private HBox itemToListItem(Item item){
-        return new HBoxItem(item);
-    }
-    /**Метод для обёртки объекта Group, чтобы тот
-     * мог отобржаться в GUI*/
-    private HBox groupToListItem(Group group){
-        return new HBoxGroup(group);
     }
 }

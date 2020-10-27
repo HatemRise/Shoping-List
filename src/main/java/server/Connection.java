@@ -1,6 +1,7 @@
 package server;
 
 import entites.Link;
+import entites.ShopingList;
 import entites.User;
 
 import java.io.File;

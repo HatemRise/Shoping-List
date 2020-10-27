@@ -6,5 +6,6 @@ public abstract class Entity implements Serializable {
     public final static int serialVersionUID = 1;
     public abstract String getName();
     public abstract void setName(String name);
-    public abstract boolean isItem();
+    @Override public abstract int hashCode();
+    @Override public abstract boolean equals(Object obj);
 }
