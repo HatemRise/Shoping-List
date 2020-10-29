@@ -7,6 +7,7 @@ import com.jfoenix.controls.*;
 import entites.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -31,6 +32,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URL;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -69,6 +72,8 @@ public class Controller implements Initializable {
     private ShopingListView listView;
     @FXML
     private JFXComboBox<Link> listLinks;
+    @FXML
+    private JFXComboBox<Group> itemGroupSwitcher;
     /**Метод инициализации конструктора. Вызывается при инициализации в методе main()
      * на 19 строке(fxmlLoader.load())*/
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -87,6 +92,8 @@ public class Controller implements Initializable {
                 selectedItemProperty(true);
             }
         });
+        itemGroupSwitcher.getItems().add(new Group("Empty"));
+        itemGroupSwitcher.getItems().addAll(list.getGroups());
     }
     /**Метод, который слишком надолго прижился в этой проге.
      * Заполняет LitView тестовыми данными. Будет удалён, когда будет
@@ -97,7 +104,7 @@ public class Controller implements Initializable {
             Item item = new Item("name" + i);
             item.setQuantity(12 + i);
             item.setDescription("description" + i);
-            list.getList().add(item);
+            list.addItem(item);
         }
         for(int j = 0 ; j < 3; j++) {
             Group group = new Group("name" + String.valueOf(j));
@@ -106,7 +113,7 @@ public class Controller implements Initializable {
                 item.setQuantity(12 + i);
                 item.setDescription("description" + String.valueOf(i + j));
                 item.setGroup(group);
-                list.getList().add(item);
+                list.addItem(item);
             }
         }
         listView.getItems().addAll(list.getList());
@@ -144,6 +151,25 @@ public class Controller implements Initializable {
                 item.setPriority(itemPrioritySwitcher.getValue());
             }
         });
+        itemGroupSwitcher.setOnAction(action -> {
+            if(itemGroupSwitcher.getValue() != item.getGroup()) {
+                if (itemGroupSwitcher.getValue().getName().equals("Empty")) {
+                    if(item.getGroup() != null) {
+                        listView.groupCounterSubtract(item.getGroup().getName());
+                        item.setGroup(null);
+                        listView.groupChange(item);
+                    }
+                } else {
+                    if(item.getGroup() != null) {
+                        listView.groupCounterSubtract(item.getGroup().getName());
+                    }
+                    item.setGroup(itemGroupSwitcher.getValue());
+                    listView.groupChange(item);
+                }
+            }
+        });
+        itemGroupSwitcher.setValue(item.getGroup() != null ? item.getGroup()
+                : itemGroupSwitcher.getItems().get(0));
         itemPrioritySwitcher.setValue(item.getPriority());
         itemDescription.setText(item.getDescription());
         itemDescriptionSaveButton.setDisable(true);

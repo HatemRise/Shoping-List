@@ -85,4 +85,5 @@ public class ShopingListCell extends HBox {
     public int itemHashCode(){
         return this.itemHashCode;
     }
+
 }

@@ -24,16 +24,11 @@ public class Group extends Entity{
 
     @Override
     public String toString(){
-        return "Group " + this.name;
+        return this.name;
     }
 
     @Override
     public int hashCode() {
         return this.name.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return this.hashCode() == obj.hashCode() ? true : false;
     }
 }

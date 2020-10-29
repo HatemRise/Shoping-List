@@ -84,6 +84,10 @@ public class ShopingList extends Entity implements Serializable {
         if(item.getGroup() != null && !groups.contains(item.getGroup())) groups.add(item.getGroup());
     }
 
+    public List<Group> getGroups() {
+        return groups;
+    }
+
     @Override
     public int hashCode() {
         return this.name.hashCode();

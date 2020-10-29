@@ -26,6 +26,14 @@ public class ShopingListGroupCell extends ShopingListCell {
         this.expanded = expanded;
     }
 
+    public int size(){
+        return Integer.parseInt(super.getQuantity().getText());
+    }
+
+    public void setQuantity(int num){
+        super.getQuantity().setText(String.valueOf(num));
+    }
+
     @Override
     public Text getDescription() {
         return super.getDescription();

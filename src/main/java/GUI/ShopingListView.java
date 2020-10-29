@@ -19,6 +19,7 @@ import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -43,15 +44,23 @@ public class ShopingListView extends VBox {
                 change.next();
                 List<ShopingListCell> temp = new ArrayList<>();
                 change.getAddedSubList().stream().forEach(i -> temp.add(new ShopingListCell(i)));
-                cells.addAll(change.getFrom(), temp);
+                cells.addAll(change.getFrom(), temp.stream().filter(item -> item.getGroupName() == null).collect(Collectors.toList()));
                 cells.removeAll(removeFromGUI((List<Item>) change.getRemoved()));
                 temp.stream().filter(i -> i.getGroupName() != null)
                         .forEachOrdered(i -> {
                             if(!isThisGroupExist(i.getGroupName())){
-                                cells.add(cells.indexOf(i), new ShopingListGroupCell(i.getGroupName()));
+                                cells.add(new ShopingListGroupCell(i.getGroupName()));
                             }
-                            i.managedProperty().bind(i.visibleProperty());
-                            i.setVisible(false);
+                            Optional optional = cells.parallelStream()
+                                    .filter(cell -> cell.getClass().equals(ShopingListGroupCell.class)
+                                            && cell.getName().getText().equals(i.getGroupName())).findFirst();
+                            if(!optional.isEmpty()) {
+                                ShopingListGroupCell shopingListGroupCell = (ShopingListGroupCell) optional.get();
+                                cells.add(cells.indexOf(shopingListGroupCell) + shopingListGroupCell.size() + 1, i);
+                                shopingListGroupCell.setQuantity(shopingListGroupCell.size() + 1);
+                                i.managedProperty().bind(i.visibleProperty());
+                                i.setVisible(shopingListGroupCell.isExpanded());
+                            }
                         });
             }
         });
@@ -71,7 +80,7 @@ public class ShopingListView extends VBox {
                                     item.setVisible(false);
                                 });
                                 temp.setExpanded(false);
-                                if(!getSelectedCell().isVisible()){
+                                if(selected.get() != -1 && !getSelectedCell().isVisible()){
                                     selected.set(0);
                                     setSelectionCell();
                                 }
@@ -119,6 +128,11 @@ public class ShopingListView extends VBox {
         cells.get(index).update(item);
     }
 
+    public void groupChange(Item item){
+        items.remove(item);
+        items.add(items.stream().filter(i -> i.getGroup() == item.getGroup()).collect(Collectors.toList()).size(), item);
+    }
+
     public void updateItem(){
 
     }
@@ -162,5 +176,11 @@ public class ShopingListView extends VBox {
        return cells.parallelStream().filter(cell ->
                 items.parallelStream().anyMatch(item -> item.hashCode() == cell.itemHashCode()))
                 .collect(Collectors.toList());
+    }
+
+    public void groupCounterSubtract(String name) {
+        ShopingListGroupCell shopingListGroupCell = (ShopingListGroupCell) cells.parallelStream().filter(cell -> cell.getClass().equals(ShopingListGroupCell.class)
+        && cell.getName().getText().equals(name)).findFirst().get();
+        shopingListGroupCell.setQuantity(shopingListGroupCell.size() - 1);
     }
 }
