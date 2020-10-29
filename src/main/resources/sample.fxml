@@ -15,17 +15,17 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootNode" prefHeight="633.0" prefWidth="925.0" styleClass="body" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane fx:id="rootNode" prefHeight="633.0" prefWidth="888.0" styleClass="body" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <stylesheets>
         <URL value="@Style.css" />
     </stylesheets>
    <AnchorPane>
       <children>
-         <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="926.0" styleClass="topBox">
+         <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="928.0" styleClass="topBox">
             <children>
-               <JFXButton fx:id="deleteList" prefHeight="25.0" prefWidth="25.0" text="-" />
-               <JFXComboBox fx:id="listLinks" prefHeight="33.0" prefWidth="211.0" />
-               <JFXButton fx:id="newList" prefHeight="25.0" prefWidth="25.0" text="+" />
+               <JFXButton fx:id="share" onAction="#share" prefHeight="25.0" prefWidth="25.0" text="-" />
+               <JFXComboBox fx:id="listLinks" prefHeight="23.0" prefWidth="211.0" />
+               <JFXButton fx:id="newList" onAction="#addList" prefHeight="25.0" prefWidth="25.0" text="+" />
                <Region prefHeight="25.0" prefWidth="269.0" />
                <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#minimizeWindow" prefHeight="24.0" prefWidth="24.0" styleClass="minimizeButton" text="-">
                   <font>

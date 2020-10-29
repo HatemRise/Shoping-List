@@ -7,7 +7,6 @@ import com.jfoenix.controls.*;
 import entites.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,6 +14,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -28,14 +30,11 @@ import server.Connection;
 import entites.ShopingList;
 import server.ShopingNet;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.net.URL;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class Controller implements Initializable {
     private Connection connect;
@@ -85,6 +84,8 @@ public class Controller implements Initializable {
             listLinks.getItems().addAll(this.settings.getUser().getLists());
         }
         testDataList();
+        listView.setContextEvent(action -> itemContext(action));
+        listView.setContextGroupEvent(action -> groupContext(action));
         listView.selectedProperty().addListener(action -> {
             if (listView.getSelected() != -1) {
                 selectedItemProperty(false);
@@ -128,11 +129,13 @@ public class Controller implements Initializable {
         itemName.setOnAction(actionEvent -> {
             item.setName(itemName.getText());
             cell.getName().setText(itemName.getText());
+            cell.changeHashCode(item.hashCode());
         });
         itemQuantityMinus.setOnAction(action -> {
             if(Integer.parseInt(itemQuantity.getText()) > 0) {
                 item.setQuantity(item.getQuantity() - 1);
                 cell.getQuantity().setText(String.valueOf(item.getQuantity()));
+                cell.changeHashCode(item.hashCode());
                 itemQuantity.setText(String.valueOf(item.getQuantity()));
             }
         });
@@ -140,11 +143,13 @@ public class Controller implements Initializable {
         itemQuantity.setOnAction(action -> {
             item.setQuantity(itemQuantity.getText());
             cell.getQuantity().setText(String.valueOf(item.getQuantity()));
+            cell.changeHashCode(item.hashCode());
         });
         itemQuantityPlus.setOnAction(action -> {
             item.setQuantity(item.getQuantity() + 1);
             cell.getQuantity().setText(String.valueOf(item.getQuantity()));
             itemQuantity.setText(String.valueOf(item.getQuantity()));
+            cell.changeHashCode(item.hashCode());
         });
         itemPrioritySwitcher.setOnAction(action -> {
             if(itemPrioritySwitcher.getValue() != item.getPriority()) {
@@ -182,6 +187,7 @@ public class Controller implements Initializable {
         itemDescriptionSaveButton.setOnAction(action ->{
             item.setDescription(itemDescription.getText());
             cell.getDescription().setText(itemDescription.getText());
+            cell.changeHashCode(item.hashCode());
             itemDescriptionSaveButton.setDisable(true);
         });
         itemRemoveButton.setOnAction(action -> {
@@ -191,9 +197,53 @@ public class Controller implements Initializable {
         });
 
     }
+    ContextMenu menu = new ContextMenu();
+    private void groupContext(ContextMenuEvent event){
+        menu.hide();
+        menu = new ContextMenu();
+        MenuItem remove = new MenuItem("Remove");
+        MenuItem edit = new MenuItem("Edit");
+        menu.getStyleClass().addAll("contextMenu");
+        remove.getStyleClass().addAll("contextMenuItem");
+        edit.getStyleClass().addAll("contextMenuItem");
+        remove.setOnAction(action -> {
+            listView.getCells().parallelStream().filter(cell -> cell.getGroupName() != null && cell.getGroupName().equals(((ShopingListGroupCell)event.getSource()).getName().getText()))
+                    .forEach(cell -> {
+                        cell.setGroupName(null);
+                    });
+            List<Item> temp = listView.getItems().parallelStream().filter(item -> item.getGroup() != null
+                    && item.getGroup().getName().equals(((ShopingListGroupCell)event.getSource()).getName().getText())).collect(Collectors.toList());
+            temp.stream().forEachOrdered(item -> {
+                list.getGroups().remove(item.getGroup());
+                itemGroupSwitcher.getItems().remove(item.getGroup());
+                item.setGroup(null);
+                listView.groupChange(item);
+            });
+            listView.getCells().remove(event.getSource());
+        });
+        edit.setOnAction(action -> {
+            editGroup((ShopingListGroupCell) event.getSource());
+        });
+        menu.setHideOnEscape(true);
+        menu.getItems().addAll(edit, remove);
+        menu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY());
+    }
+
+    private void itemContext(ContextMenuEvent event){
+        menu.hide();
+        menu = new ContextMenu();
+        MenuItem remove = new MenuItem("Remove");
+        menu.getStyleClass().addAll("contextMenu");
+        remove.getStyleClass().addAll("contextMenuItem");
+        remove.setOnAction(action -> {
+            listView.getItems().remove(listView.getSelectedItem());
+        });
+        menu.getItems().add(remove);
+        menu.show((Node) event.getSource(), event.getScreenX(), event.getScreenY());
+    }
     /**Метод для вызова логин окна, или метода для коннекта,
      * в зависимости от нличия пользовательских данных*/
-    public void logIn() throws IOException {
+    public void logIn() {
         if(emptyUser()) {
             showLogInWindow(null);
         } else {
@@ -210,9 +260,114 @@ public class Controller implements Initializable {
     public void logOut(){
         this.settings.setUser(null);
     }
-    /**Метод для сохранения объекта ShopingList локально*/
-    public void save(){
-        System.out.println("Save Не реализовано!");
+    public void save(Event event){
+        if(this.settings.getUser() == null){
+            showLogInWindow("Please log in for continue");
+            return;
+        }
+        saveLocal();
+        saveRemote();
+    }
+
+    public void saveLocal() {
+        File localShopingListFile = new File("/lists/" + list.getName());
+        try {
+            FileOutputStream localStorage = new FileOutputStream(localShopingListFile);
+            ObjectOutputStream listObject = new ObjectOutputStream(localStorage);
+            listObject.writeObject(list);
+            listObject.flush();
+            listObject.close();
+            localStorage.flush();
+            localStorage.close();
+            this.settings.getUser().getList(this.settings.getUser().getLists()
+                    .indexOf(listLinks.getValue())).setLocal(localShopingListFile.getPath());
+            listLinks.getValue().setLocal(localShopingListFile.getPath());
+        } catch (FileNotFoundException e){
+            try {
+                localShopingListFile.createNewFile();
+                saveLocal();
+            }catch (IOException ex){
+                File folder = new File("/lists");
+                folder.mkdir();
+                saveLocal();
+            }
+        } catch (IOException e) {
+            System.out.println("IO Error: Object stream not created!");
+        }
+    }
+
+    public void addList(){
+        VBox root = new VBox();
+        HBox buttonPane = new HBox();
+        Stage group = new Stage();
+        Scene scene = new Scene(root, 300, 90);
+        JFXButton cancel = new JFXButton("Cancel");
+        cancel.setOnAction(action ->{group.close();});
+        JFXButton add = new JFXButton("add");
+        add.setPrefWidth(60);
+        JFXTextField shopingListName = new JFXTextField();
+        Region space = new Region();
+        space.setPrefWidth(170);
+        cancel.getStyleClass().addAll("cancelButton", "linkButton");
+        add.getStyleClass().addAll("addButton", "linkButton");
+        buttonPane.getStyleClass().add("buttonPane");
+        shopingListName.setPromptText("Link");
+        shopingListName.setLabelFloat(true);
+        shopingListName.getStyleClass().add("linkField");
+        root.getStyleClass().add("linkBody");
+        root.getStylesheets().add("/Style.css");
+        buttonPane.getChildren().addAll(add, space, cancel);
+        root.getChildren().addAll(shopingListName, buttonPane);
+        group.setScene(scene);
+        group.initStyle(StageStyle.TRANSPARENT);
+        scene.setFill(Color.TRANSPARENT);
+        group.setTitle("Log In");
+        group.initOwner(primaryStage.getScene().getWindow());
+        group.initModality(Modality.WINDOW_MODAL);
+        group.show();
+        add.setOnAction(action -> {
+            if(shopingListName.getText().length() < 1){
+
+            } else {
+                this.list = new ShopingList(shopingListName.getText());
+                Link link = new Link();
+                link.setName(list.getName());
+                this.settings.getUser().addLink(link);
+                this.listLinks.getItems().addAll(link);
+                this.listLinks.setValue(link);
+                this.listView.clear();
+                this.listView.getItems().addAll(list.getList());
+                itemGroupSwitcher.getItems().clear();
+                itemGroupSwitcher.getItems().addAll(list.getGroups());
+                group.close();
+            }
+        });
+    }
+
+    public void share(){
+        VBox root = new VBox();
+        HBox buttonPane = new HBox();
+        Stage group = new Stage();
+        Scene scene = new Scene(root, 300, 90);
+        JFXButton cancel = new JFXButton("Cancel");
+        cancel.setOnAction(action ->{group.close();});
+        JFXTextField link = new JFXTextField(listLinks.getValue().getRemote());
+        cancel.getStyleClass().addAll("cancelButton", "linkButton");
+        buttonPane.getStyleClass().add("buttonPane");
+        link.setPromptText("Link");
+        link.setLabelFloat(true);
+        link.getStyleClass().add("linkField");
+        root.getStyleClass().add("linkBody");
+        root.getStylesheets().add("/Style.css");
+        buttonPane.getChildren().addAll(cancel);
+        root.getChildren().addAll(link, buttonPane);
+        group.setScene(scene);
+        group.initStyle(StageStyle.TRANSPARENT);
+        scene.setFill(Color.TRANSPARENT);
+        group.setTitle("Log In");
+        group.initOwner(primaryStage.getScene().getWindow());
+        group.initModality(Modality.WINDOW_MODAL);
+        group.show();
     }
     /**Метод для сохранения объекта ShopingList удалённо.
      * Перед сохранением следует проверить, есть ли ссылка на этот
@@ -225,9 +380,14 @@ public class Controller implements Initializable {
             showLogInWindow("Please log in for continue");
             return;
         } else {
-            connect.create(this.settings.getUser(), list);
+            if(listLinks.getValue() != null && listLinks.getValue().getRemote() != null && listLinks.getValue().getRemote().length() > 1){
+                connect.change(settings.getUser(), listLinks.getValue(), list);
+            } else {
+                connect.create(this.settings.getUser(), list);
+            }
         }
     }
+
     VBox addSelectRoot = new VBox();
     public void addSelect(Event event){
         if(mainPane.getChildren().contains(addSelectRoot)){
@@ -259,21 +419,118 @@ public class Controller implements Initializable {
     }
 
     public void addItem(){
-        listView.getItems().add(0, new Item(""));
-        listView.setSelected(0);
+        Item item = new Item("");
+        if(!listView.getItems().contains(item)) {
+            listView.getItems().add(0, item);
+            listView.setSelected(-1);
+            listView.setSelected(0);
+        }
     }
 
     public  void addGroup(){
-        listView.getCells().add(0, new ShopingListGroupCell("Input your name"));
+        VBox root = new VBox();
+        HBox buttonPane = new HBox();
+        Stage group = new Stage();
+        Scene scene = new Scene(root, 300, 90);
+        JFXButton cancel = new JFXButton("Cancel");
+        cancel.setOnAction(action ->{group.close();});
+        JFXButton add = new JFXButton("add");
+        add.setPrefWidth(60);
+        JFXTextField groupNameField = new JFXTextField();
+        Region space = new Region();
+        space.setPrefWidth(170);
+        cancel.getStyleClass().addAll("cancelButton", "linkButton");
+        add.getStyleClass().addAll("addButton", "linkButton");
+        buttonPane.getStyleClass().add("buttonPane");
+        groupNameField.setPromptText("Link");
+        groupNameField.setLabelFloat(true);
+        groupNameField.getStyleClass().add("linkField");
+        root.getStyleClass().add("linkBody");
+        root.getStylesheets().add("/Style.css");
+        buttonPane.getChildren().addAll(add, space, cancel);
+        root.getChildren().addAll(groupNameField, buttonPane);
+        group.setScene(scene);
+        group.initStyle(StageStyle.TRANSPARENT);
+        scene.setFill(Color.TRANSPARENT);
+        group.setTitle("Log In");
+        group.initOwner(primaryStage.getScene().getWindow());
+        group.initModality(Modality.WINDOW_MODAL);
+        group.show();
+        add.setOnAction(action -> {
+            if(groupNameField.getText().length() < 3){
+
+            } else {
+                listView.getCells().add(new ShopingListGroupCell(groupNameField.getText()));
+                itemGroupSwitcher.getItems().add(new Group(groupNameField.getText()));
+                group.close();
+            }
+        });
+    }
+
+    private void editGroup(ShopingListGroupCell cell){
+        VBox root = new VBox();
+        HBox buttonPane = new HBox();
+        Stage group = new Stage();
+        Scene scene = new Scene(root, 300, 90);
+        JFXButton cancel = new JFXButton("Cancel");
+        cancel.setOnAction(action ->{group.close();});
+        JFXButton edit = new JFXButton("Edit");
+        edit.setPrefWidth(60);
+        JFXTextField groupNameField = new JFXTextField(cell.getName().getText());
+        Region space = new Region();
+        space.setPrefWidth(170);
+        cancel.getStyleClass().addAll("cancelButton", "linkButton");
+        edit.getStyleClass().addAll("addButton", "linkButton");
+        buttonPane.getStyleClass().add("buttonPane");
+        groupNameField.setPromptText("Link");
+        groupNameField.setLabelFloat(true);
+        groupNameField.getStyleClass().add("linkField");
+        root.getStyleClass().add("linkBody");
+        root.getStylesheets().add("/Style.css");
+        buttonPane.getChildren().addAll(edit, space, cancel);
+        root.getChildren().addAll(groupNameField, buttonPane);
+        group.setScene(scene);
+        group.initStyle(StageStyle.TRANSPARENT);
+        scene.setFill(Color.TRANSPARENT);
+        group.setTitle("Log In");
+        group.initOwner(primaryStage.getScene().getWindow());
+        group.initModality(Modality.WINDOW_MODAL);
+        group.show();
+        edit.setOnAction(action -> {
+            if(groupNameField.getText().length() < 3){
+            } else if(!listView.isThisGroupExist(groupNameField.getText())){
+                listView.getItems().parallelStream().filter(item -> item.getGroup() != null
+                        && item.getGroup().getName().equals(cell.getName().getText())).forEachOrdered(item -> {
+                    itemGroupSwitcher.getItems().remove(item.getGroup());
+                    item.getGroup().setName(groupNameField.getText());
+                });
+                listView.getCells().parallelStream().filter(item -> item.getGroupName() != null
+                        && item.getGroupName().equals(cell.getName().getText())).forEach(item -> {
+                            item.setGroupName(groupNameField.getText());
+                });
+                cell.getName().setText(groupNameField.getText());
+                itemGroupSwitcher.getItems().add(new Group(groupNameField.getText()));
+                group.close();
+            }
+        });
     }
     /**Метод для получения объекта ShopingList по ссылке, и последующем
      * отображении в таблице*/
-    public void getLists(){
+    public void getLists() throws IOException, ClassNotFoundException {
         if(emptyUser()){
             showLogInWindow("Please log in for continue");
             return;
         } else {
-//            connect.getList(settings.getUser(), )
+            File file = connect.getList(settings.getUser(), listLinks.getValue());
+            FileInputStream in = new FileInputStream(file);
+            ObjectInputStream remoteList = new ObjectInputStream(in);
+            this.list = (ShopingList) remoteList.readObject();
+            remoteList.close();
+            in.close();
+            listView.clear();
+            listView.getItems().addAll(list.getList());
+            itemGroupSwitcher.getItems().clear();
+            itemGroupSwitcher.getItems().addAll(list.getGroups());
         }
     }
     /**Метод для удаления файла из удалённого репозитория по ссылке*/
@@ -282,7 +539,7 @@ public class Controller implements Initializable {
             showLogInWindow("Please log in for continue");
             return;
         } else {
-//            connect.delete(settings.getUser(), )
+            connect.delete(settings.getUser(), listLinks.getValue());
         }
     }
     /**Метод для ресета листа. Shopinglist должен удаляться из локального
@@ -291,8 +548,11 @@ public class Controller implements Initializable {
         if(emptyUser()){
             showLogInWindow("Please log in for continue");
             return;
-        } else {
-//            connect.delete(settings.getUser(), )
+        } else if(listLinks.getValue() != null && listLinks.getValue().getRemote() != null){
+            File shopingList = new File(listLinks.getValue().getLocal());
+            if(shopingList.exists())shopingList.delete();
+            connect.getList(this.settings.getUser(), listLinks.getValue());
+            saveLocal();
         }
     }
     VBox deleteSelectRoot = new VBox();
@@ -378,7 +638,7 @@ public class Controller implements Initializable {
     /**Метод для проверки на наличие пользовательских данных.
      * Если User не задан(равен null), то метод вернёт true*/
     private boolean emptyUser(){
-        return settings.getUser() == null ? true : false;
+        return this.settings.getUser() == null ? true : false;
     }
     /**Костыль для получения primaryStage в конструкторе до отображения интерфейса.
      * Так же добавления слушателя на мышь. Если пользователь нажал мышкой и потащил
@@ -402,7 +662,6 @@ public class Controller implements Initializable {
         List<Link> response = connect.logIn(this.settings.getUser());
         this.settings.getUser().setLists(response);
         listLinks.getItems().addAll(response);
-        System.out.println(response.get(0).toString());
     }
     /**Очередной костыль. На этот раз уже для получения данных из
      * Логин формы при нажатии на кнопку Log In*/
@@ -454,7 +713,8 @@ public class Controller implements Initializable {
             in.close();
             return settings;
         } catch (Exception ex) {
-            return new Settings();
+            Settings settings = new Settings();
+            return settings;
         }
     }
 }

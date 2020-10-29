@@ -41,12 +41,12 @@ public class ShopingNet implements Connection {
             e.printStackTrace();
         }
         System.out.println(responseString);
-        String[] array = responseString.split(",", -1);
+        String[] array = responseString.substring(1, responseString.length() - 1).split(",", -1);
 
         List<Link> lst = new ArrayList<>();
         for (String el : array) {
             Link link = new Link();
-            link.setRemote(el);
+            link.setRemote(el.substring(1,el.length() - 1));
             lst.add(link);
         }
         try {
@@ -171,6 +171,7 @@ public class ShopingNet implements Connection {
             int inByte;
             while ((inByte = bis.read()) != -1) bos.write(inByte);
             bis.close();
+            bos.flush();
             bos.close();
 
             res.close();

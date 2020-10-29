@@ -6,6 +6,7 @@ public class Link implements Serializable {
     public final static int serialVersionUID = 12;
     String remote;
     String local;
+    String name;
 
     public Link() {
     }
@@ -24,6 +25,10 @@ public class Link implements Serializable {
         return remote;
     }
 
+    public void setName(String name){
+        this.name = name;
+    }
+
     public void setRemote(String remote) {
         this.remote = remote;
     }
@@ -37,9 +42,6 @@ public class Link implements Serializable {
     }
 
     public String toString(){
-        if(this.remote != null){
-            return remote;
-        }
-        return local;
+        return this.name == null ? this.remote : this.name;
     }
 }

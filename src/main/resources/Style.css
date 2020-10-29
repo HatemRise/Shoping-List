@@ -12,6 +12,10 @@
     -fx-padding: 0;
 }
 
+.linkField{
+    -fx-text-fill: #ffffff90;
+}
+
 .cell{
     -fx-padding: 0;
     -fx-background-color: #ffffff00;
@@ -41,6 +45,18 @@
     -fx-text-fill: #ffffffB9;
     -fx-font-size: 24;
 }
+
+.contextMenu{
+    -fx-padding: 0;
+    -fx-font-size: 12;
+    -fx-text-fill: #ffffff;
+    -fx-background-color: #000000B9;
+}
+
+.contextMenuItem: focused{
+    -fx-background-color: #00000070;
+}
+
 .scroll-pane, .scroll-pane > .viewport{
     -fx-background-color: transparent;
 }
@@ -129,7 +145,24 @@
 .buttonPane{
     -fx-padding: 10px 0 0 0;
 }
+
 .linkButton{
+}
+
+.combo-box-popup .list-view{
+    -fx-background-color: #000000B9;
+
+}
+
+.combo-box-popup .list-view .list-cell{
+    -fx-text-fill: #ffffff;
+}
+.combo-box-popup .list-view .list-cell:focused{
+    -fx-background-color: #ff000040;
+}
+
+.combo-box-popup .list-view .list-cell:hover{
+    -fx-background-color: #ffffff40;
 }
 
 .jfx-rippler{

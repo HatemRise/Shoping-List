@@ -1,14 +1,12 @@
 package GUI;
 
 import com.jfoenix.controls.JFXRippler;
-import entites.Entity;
-import entites.Group;
 import entites.Item;
 import entites.Priority;
-import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 import java.util.Arrays;
@@ -85,5 +83,7 @@ public class ShopingListCell extends HBox {
     public int itemHashCode(){
         return this.itemHashCode;
     }
+
+    public void changeHashCode(int hash){this.itemHashCode = hash;}
 
 }

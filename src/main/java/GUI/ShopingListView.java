@@ -13,6 +13,10 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.VBox;
 
 import java.sql.SQLOutput;
@@ -28,6 +32,8 @@ public class ShopingListView extends VBox {
     private ObservableList<ShopingListCell> cells = FXCollections.observableArrayList();
     private ObservableList<Item> items = FXCollections.observableArrayList();
     private ShopingListView thisClass = this;
+    private EventHandler<ContextMenuEvent> contextGroupEvent;
+    private EventHandler<ContextMenuEvent> contextEvent;
 
     public ShopingListView() {
         init();
@@ -71,6 +77,11 @@ public class ShopingListView extends VBox {
                 thisClass.getChildren().addAll(change.getFrom(), change.getAddedSubList());
                 thisClass.getChildren().removeAll(change.getRemoved());
                 change.getAddedSubList().parallelStream().forEach(i ->{
+                    if(i.getClass().equals(ShopingListGroupCell.class)){
+                        ((ShopingListGroupCell) i).setOnContextMenuRequested(contextGroupEvent);
+                    } else {
+                        i.setOnContextMenuRequested(contextEvent);
+                    }
                     i.setOnMouseClicked(action ->{
                         if(i.getClass().equals(ShopingListGroupCell.class)){
                             ShopingListGroupCell temp = (ShopingListGroupCell) i;
@@ -81,8 +92,13 @@ public class ShopingListView extends VBox {
                                 });
                                 temp.setExpanded(false);
                                 if(selected.get() != -1 && !getSelectedCell().isVisible()){
-                                    selected.set(0);
-                                    setSelectionCell();
+                                    if(cells.get(0).getClass().equals(ShopingListCell.class)) {
+                                        selected.set(0);
+                                        setSelectionCell();
+                                    } else {
+                                        selected.set(-1);
+                                        setSelectionCell();
+                                    }
                                 }
                             } else {
                                 cells.parallelStream().filter(item -> item.getGroupName() != null && item.getGroupName().equals(temp.getName().getText())).forEach(item -> item.setVisible(true));
@@ -100,7 +116,7 @@ public class ShopingListView extends VBox {
 
     private void setSelectionCell(){
         cells.parallelStream().forEach(item -> item.getStyleClass().remove("selected"));
-        cells.get(selected.get()).getStyleClass().add("selected");
+        if(selected.get() != -1)cells.get(selected.get()).getStyleClass().add("selected");
     }
 
     public void update(){
@@ -158,7 +174,7 @@ public class ShopingListView extends VBox {
         return selected;
     }
 
-    private boolean isThisGroupExist(String name){
+    public boolean isThisGroupExist(String name){
         if(name == null){
             return false;
         }
@@ -182,5 +198,22 @@ public class ShopingListView extends VBox {
         ShopingListGroupCell shopingListGroupCell = (ShopingListGroupCell) cells.parallelStream().filter(cell -> cell.getClass().equals(ShopingListGroupCell.class)
         && cell.getName().getText().equals(name)).findFirst().get();
         shopingListGroupCell.setQuantity(shopingListGroupCell.size() - 1);
+    }
+
+    public void setContextGroupEvent(EventHandler<ContextMenuEvent> contextGroupEvent) {
+        this.contextGroupEvent = contextGroupEvent;
+        cells.parallelStream().filter(group -> group.getClass().equals(ShopingListGroupCell.class))
+                .forEach(group -> group.setOnContextMenuRequested(contextGroupEvent));
+    }
+
+    public void setContextEvent(EventHandler<ContextMenuEvent> contextEvent) {
+        this.contextEvent = contextEvent;
+        cells.parallelStream().filter(group -> !group.getClass().equals(ShopingListGroupCell.class))
+                .forEach(group -> group.setOnContextMenuRequested(contextEvent));
+    }
+
+    public void clear(){
+        this.items.clear();
+        this.cells.clear();
     }
 }
