@@ -11,12 +11,22 @@
     -fx-background-color: none;
     -fx-padding: 0;
 }
-.groupTitledPane {
-    -fx-margin: 0;
+
+.linkField{
+    -fx-text-fill: #ffffff90;
 }
 
-.list-view{
+.cell{
+    -fx-padding: 0;
+    -fx-background-color: #ffffff00;
+}
+
+.list{
     -fx-background-color: #00000050;
+}
+
+.selected{
+    -fx-background-color: #f2ff0050;
 }
 
 .cell:focused{
@@ -30,46 +40,57 @@
     -fx-text-fill: #ffffff80;
 }
 
-.property, .groupItem{
+.property, .groupCell{
     -fx-padding: 20;
     -fx-text-fill: #ffffffB9;
     -fx-font-size: 24;
 }
 
-.groupItem{
+.contextMenu{
+    -fx-padding: 0;
+    -fx-font-size: 12;
+    -fx-text-fill: #ffffff;
     -fx-background-color: #000000B9;
 }
 
-.groupItem > .groupName{
-    -fx-text-fill: #ffffffB9;
+.contextMenuItem: focused{
+    -fx-background-color: #00000070;
 }
 
-.cell{
+.scroll-pane, .scroll-pane > .viewport{
+    -fx-background-color: transparent;
+}
+
+.groupCell{
     -fx-padding: 0;
-    -fx-background-color: #ffffff00;
+    -fx-background-color: #00000070;
 }
 
-.list-view .scroll-bar:vertical .increment-arrow{}
-.list-view .scroll-bar:vertical .decrement-arrow,
-.list-view .scroll-bar:vertical .increment-button,
-.list-view .scroll-bar:vertical .decrement-button {
+.groupName{
+    -fx-text-fill: #ffffff70;
+}
+
+.scroll-bar:vertical .increment-arrow{}
+.scroll-bar:vertical .decrement-arrow,
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
     -fx-background-color: #00000050;
     -fx-border-color: transparent;
 }
 
-.list-view .scroll-bar:vertical .thumb{
+.scroll-bar:vertical .thumb{
     -fx-background-color: #ffffffB9;
     -fx-border-color: transparent;
     -fx-background-radius: 50em;
 }
 
-.list-view .scroll-bar:vertical .track{
+.scroll-bar:vertical .track{
     -fx-background-color: #00000050;
     -fx-border-color: transparent;
     -fx-background-radius: 0em;
 }
 
-.list-view .scroll-bar:vertical{
+.scroll-bar:vertical{
     -fx-background-color: #00000050;
 }
 
@@ -124,5 +145,26 @@
 .buttonPane{
     -fx-padding: 10px 0 0 0;
 }
+
 .linkButton{
+}
+
+.combo-box-popup .list-view{
+    -fx-background-color: #000000B9;
+
+}
+
+.combo-box-popup .list-view .list-cell{
+    -fx-text-fill: #ffffff;
+}
+.combo-box-popup .list-view .list-cell:focused{
+    -fx-background-color: #ff000040;
+}
+
+.combo-box-popup .list-view .list-cell:hover{
+    -fx-background-color: #ffffff40;
+}
+
+.jfx-rippler{
+    -jfx-rippler-fill: red;
 }
