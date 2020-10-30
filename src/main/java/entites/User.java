@@ -8,11 +8,12 @@ public class User implements Serializable {
     public final static int serialVersionUID = 3;
     private String name;
     private String password;
-    private List<Link> lists = new ArrayList<Link>();
+    private List<Link> lists;
 
     public User(String name, String password) {
         this.name = name;
         this.password = password;
+        lists = new ArrayList<Link>();
     }
 
     public List getLists() {

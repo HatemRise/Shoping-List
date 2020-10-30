@@ -11,12 +11,22 @@
     -fx-background-color: none;
     -fx-padding: 0;
 }
-.groupTitledPane {
-    -fx-margin: 0;
+
+.linkField{
+    -fx-text-fill: #ffffff90;
 }
 
-.list-view{
+.cell{
+    -fx-padding: 0;
+    -fx-background-color: #ffffff00;
+}
+
+.list{
     -fx-background-color: #00000050;
+}
+
+.selected{
+    -fx-background-color: #f2ff0050;
 }
 
 .cell:focused{
@@ -30,46 +40,57 @@
     -fx-text-fill: #ffffff80;
 }
 
-.property, .groupItem{
+.property, .groupCell{
     -fx-padding: 20;
     -fx-text-fill: #ffffffB9;
     -fx-font-size: 24;
 }
 
-.groupItem{
+.contextMenu{
+    -fx-padding: 0;
+    -fx-font-size: 12;
+    -fx-text-fill: #ffffff;
     -fx-background-color: #000000B9;
 }
 
-.groupItem > .groupName{
-    -fx-text-fill: #ffffffB9;
+.contextMenuItem: focused{
+    -fx-background-color: #00000070;
 }
 
-.cell{
+.scroll-pane, .scroll-pane > .viewport{
+    -fx-background-color: transparent;
+}
+
+.groupCell{
     -fx-padding: 0;
-    -fx-background-color: #ffffff00;
+    -fx-background-color: #00000070;
 }
 
-.list-view .scroll-bar:vertical .increment-arrow{}
-.list-view .scroll-bar:vertical .decrement-arrow,
-.list-view .scroll-bar:vertical .increment-button,
-.list-view .scroll-bar:vertical .decrement-button {
+.groupName{
+    -fx-text-fill: #ffffff70;
+}
+
+.scroll-bar:vertical .increment-arrow{}
+.scroll-bar:vertical .decrement-arrow,
+.scroll-bar:vertical .increment-button,
+.scroll-bar:vertical .decrement-button {
     -fx-background-color: #00000050;
     -fx-border-color: transparent;
 }
 
-.list-view .scroll-bar:vertical .thumb{
+.scroll-bar:vertical .thumb{
     -fx-background-color: #ffffffB9;
     -fx-border-color: transparent;
     -fx-background-radius: 50em;
 }
 
-.list-view .scroll-bar:vertical .track{
+.scroll-bar:vertical .track{
     -fx-background-color: #00000050;
     -fx-border-color: transparent;
     -fx-background-radius: 0em;
 }
 
-.list-view .scroll-bar:vertical{
+.scroll-bar:vertical{
     -fx-background-color: #00000050;
 }
 
@@ -117,59 +138,33 @@
     -fx-opacity: 1;
 }
 
-
-
-.titled-pane
-{
--fx-text-fill: -fx-text-base-color;
+.linkBody{
+    -fx-padding: 20px 10 0 10;
+    -fx-background-color: #000000B9;
+}
+.buttonPane{
+    -fx-padding: 10px 0 0 0;
 }
 
-.titled-pane:focused
-{
--fx-text-fill: white;
-}
-.titled-pane > .title
-{
--fx-background-color: #00000050;
--fx-background-insets: 0, 1, 2;
--fx-background-radius: 0;
--fx-padding: 0.266667em 0.933333em 0.35em 0.933333em; /* 2 10 3 10 */
+.linkButton{
 }
 
-.titled-pane:focused > .title
-{
--fx-color: -fx-focus-color;
+.combo-box-popup .list-view{
+    -fx-background-color: #000000B9;
+
 }
 
-.titled-pane > .title > .arrow-button
-{
--fx-background-color: null;
--fx-background-insets: 0;
--fx-background-radius: 0;
--fx-padding: 0.0em 0.25em 0.0em 0.0em; /* 0 3 0 0 */
+.combo-box-popup .list-view .list-cell{
+    -fx-text-fill: #ffffff;
+}
+.combo-box-popup .list-view .list-cell:focused{
+    -fx-background-color: #ff000040;
 }
 
-.titled-pane > .title > .arrow-button .arrow
-{
--fx-background-color: -fx-mark-highlight-color, -fx-mark-color;
--fx-background-insets: 1 0 -1 0, 0;
--fx-padding: 0.25em 0.3125em 0.25em 0.3125em; /* 3 3.75 3 3.75 */
--fx-shape: "M 0 0 h 7 l -3.5 4 z";
+.combo-box-popup .list-view .list-cell:hover{
+    -fx-background-color: #ffffff40;
 }
 
-.titled-pane:collapsed > .title > .arrow-button .arrow
-{
--fx-rotate: -90;
-}
-
-.titled-pane > *.content
-{
-    -fx-background-color: none;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
- }
-
-.titled-pane:focused > .title > .arrow-button .arrow
-{
--fx-background-color: white;
+.jfx-rippler{
+    -jfx-rippler-fill: red;
 }

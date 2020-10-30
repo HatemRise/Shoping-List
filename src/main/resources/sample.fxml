@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import GUI.ShopingListView?>
 <?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXComboBox?>
-<?import com.jfoenix.controls.JFXListView?>
 <?import com.jfoenix.controls.JFXTextArea?>
 <?import com.jfoenix.controls.JFXTextField?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="rootNode" prefHeight="633.0" prefWidth="925.0" styleClass="body" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane fx:id="rootNode" prefHeight="633.0" prefWidth="888.0" styleClass="body" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <stylesheets>
         <URL value="@Style.css" />
     </stylesheets>
-   <VBox prefHeight="633.0" prefWidth="925.0">
+   <AnchorPane>
       <children>
-         <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" styleClass="topBox">
+         <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="928.0" styleClass="topBox">
             <children>
+               <JFXButton fx:id="share" onAction="#share" prefHeight="25.0" prefWidth="25.0" text="-" />
+               <JFXComboBox fx:id="listLinks" prefHeight="23.0" prefWidth="211.0" />
+               <JFXButton fx:id="newList" onAction="#addList" prefHeight="25.0" prefWidth="25.0" text="+" />
+               <Region prefHeight="25.0" prefWidth="269.0" />
                <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#minimizeWindow" prefHeight="24.0" prefWidth="24.0" styleClass="minimizeButton" text="-">
                   <font>
                      <Font name="Corbel" size="42.0" />
@@ -41,75 +46,86 @@
                      <Insets />
                   </HBox.margin>
                </JFXButton>
-            </children></HBox>
-         <HBox prefHeight="685.0" prefWidth="925.0">
+            </children>
+         </HBox>
+         <AnchorPane fx:id="mainPane" layoutY="25.0">
             <children>
-               <VBox prefHeight="608.0" prefWidth="230.0" styleClass="itemSettings">
+               <VBox prefHeight="299.0" prefWidth="230.0" styleClass="buttonVBox">
                   <children>
-                     <VBox prefHeight="211.0" prefWidth="230.0" styleClass="buttonVBox">
-                        <children>
-                           <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="editLabel" text="Edit" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </Label>
-                           <JFXButton maxWidth="1.7976931348623157E308" onAction="#save" styleClass="button" text="Save" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </JFXButton>
-                           <JFXButton layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" onAction="#deleteRemoteFile" prefWidth="230.0" styleClass="button" text="Delete remote" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </JFXButton>
-                           <JFXButton layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" onAction="#deleteAndDownload" styleClass="button" text="Reset" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </JFXButton>
-                           <JFXButton layoutX="10.0" layoutY="35.0" maxWidth="1.7976931348623157E308" onAction="#getChange" styleClass="button" text="Get changes" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </JFXButton>
-                        </children>
-                     </VBox>
-                     <Region prefHeight="217.0" prefWidth="230.0" />
-                     <VBox layoutX="10.0" layoutY="10.0" prefHeight="281.0" prefWidth="230.0">
-                        <children>
-                           <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="File" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </Label>
-                           <JFXButton maxWidth="1.7976931348623157E308" onAction="#logIn" styleClass="button" text="Log In" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </JFXButton>
-                           <JFXButton layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" onAction="#getLists" styleClass="button" text="Get list" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </JFXButton>
-                           <JFXButton layoutX="10.0" layoutY="35.0" maxWidth="1.7976931348623157E308" onAction="#logOut" styleClass="button" text="Log out" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </JFXButton>
-                           <JFXButton layoutX="10.0" layoutY="60.0" maxWidth="1.7976931348623157E308" onAction="#exit" styleClass="button" text="Exit" textAlignment="CENTER">
-                              <font>
-                                 <Font name="System Bold" size="24.0" />
-                              </font>
-                           </JFXButton>
-                        </children>
-                     </VBox>
+                     <Region prefHeight="9.0" prefWidth="230.0" />
+                     <Label alignment="CENTER" maxWidth="1.7976931348623157E308" styleClass="editLabel" text="Edit" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </Label>
+                     <JFXButton maxWidth="1.7976931348623157E308" onAction="#save" styleClass="button" text="Save" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                     <JFXButton maxWidth="1.7976931348623157E308" onAction="#deleteAndDownload" styleClass="button" text="Reset" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                     <JFXButton maxWidth="1.7976931348623157E308" onAction="#getChange" styleClass="button" text="Get changes" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                     <JFXButton fx:id="addButton" layoutX="10.0" layoutY="198.0" maxWidth="1.7976931348623157E308" onAction="#addSelect" prefWidth="230.0" styleClass="button" text="Add" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                     <JFXButton maxWidth="1.7976931348623157E308" onAction="#deleteSelect" prefWidth="230.0" styleClass="button" text="Delete" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
                   </children>
                </VBox>
-                  <JFXListView fx:id="listView" prefHeight="608.0" prefWidth="475.0" styleClass="list">
-            </JFXListView>
-               <VBox fx:id="itemPropertiesPane" alignment="TOP_CENTER" disable="true">
+               <VBox layoutY="318.0" prefHeight="281.0" prefWidth="230.0">
+                  <children>
+                     <Label alignment="CENTER" maxWidth="1.7976931348623157E308" text="File" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </Label>
+                     <JFXButton maxWidth="1.7976931348623157E308" onAction="#logIn" styleClass="button" text="Log In" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                     <JFXButton fx:id="sharedList" maxWidth="1.7976931348623157E308" onAction="#sharedList" styleClass="button" text="Shared list" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                     <JFXButton maxWidth="1.7976931348623157E308" onAction="#getLists" styleClass="button" text="Get list" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                     <JFXButton maxWidth="1.7976931348623157E308" onAction="#logOut" styleClass="button" text="Log out" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                     <JFXButton maxWidth="1.7976931348623157E308" onAction="#exit" styleClass="button" text="Exit" textAlignment="CENTER">
+                        <font>
+                           <Font name="System Bold" size="24.0" />
+                        </font>
+                     </JFXButton>
+                  </children>
+               </VBox>
+               <ScrollPane hbarPolicy="NEVER" layoutX="229.0">
+                  <content>
+                        <ShopingListView fx:id="listView" prefHeight="606.0" prefWidth="471.0" styleClass="list">
+            </ShopingListView>
+                  </content>
+               </ScrollPane>
+               <VBox fx:id="itemPropertiesPane" alignment="TOP_CENTER" disable="true" layoutX="701.0">
                   <children>
                      <Label alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="216.0" text="Item">
                         <font>
@@ -158,9 +174,14 @@
                            <Insets top="20.0" />
                         </VBox.margin>
                         <children>
-                           <JFXComboBox fx:id="itemPrioritySwitcher" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="227.0" />
+                           <JFXComboBox fx:id="itemPrioritySwitcher" labelFloat="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="227.0" promptText="Priority" />
                         </children>
                      </HBox>
+                     <JFXComboBox fx:id="itemGroupSwitcher" labelFloat="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="32.0" prefWidth="227.0" promptText="Group">
+                        <VBox.margin>
+                           <Insets top="20.0" />
+                        </VBox.margin>
+                     </JFXComboBox>
                      <JFXButton fx:id="itemRemoveButton" contentDisplay="CENTER" prefHeight="50.0" prefWidth="50.0" styleClass="itemRemoveButton" text=" ">
                         <VBox.margin>
                            <Insets top="20.0" />
@@ -169,7 +190,7 @@
                   </children>
                </VBox>
             </children>
-         </HBox>
+         </AnchorPane>
       </children>
-   </VBox>
+   </AnchorPane>
 </AnchorPane>

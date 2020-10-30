@@ -5,7 +5,6 @@ import entites.ShopingList;
 import entites.User;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public interface Connection {
