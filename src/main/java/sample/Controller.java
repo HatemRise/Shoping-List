@@ -533,6 +533,7 @@ public class Controller implements Initializable {
             itemGroupSwitcher.getItems().clear();
             itemGroupSwitcher.getItems().add(new Group("Empty"));
             itemGroupSwitcher.getItems().addAll(list.getGroups());
+            saveLocal();
         }
     }
     /**Метод для удаления файла из удалённого репозитория по ссылке*/
