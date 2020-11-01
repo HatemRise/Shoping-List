@@ -1,31 +1,17 @@
 package GUI;
 
-import com.jfoenix.controls.JFXRippler;
-import com.jfoenix.controls.JFXScrollPane;
-import entites.Entity;
-import entites.Group;
 import entites.Item;
-import entites.ShopingList;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.layout.VBox;
-
-import java.sql.SQLOutput;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class ShopingListView extends VBox {
     private SimpleIntegerProperty selected = new SimpleIntegerProperty(-1);

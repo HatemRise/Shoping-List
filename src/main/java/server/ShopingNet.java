@@ -1,25 +1,15 @@
 package server;
 
-import entites.*;
-import org.apache.http.Consts;
+import entites.Link;
+import entites.ShopingList;
+import entites.User;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.*;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import entites.ShopingList;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +43,6 @@ public class ShopingNet implements Connection {
         String[] array = responseString.substring(1, responseString.length() - 1).split(",", -1);
         List<Link> lst = new ArrayList<>();
         if (responseString.equals("[]")) {
-            System.out.println("Zero list");
             return lst;
         }
         for (String el : array) {
@@ -69,38 +58,6 @@ public class ShopingNet implements Connection {
             e.printStackTrace();
         }
         return lst;
-    }
-
-    @Override
-    public boolean change(User user, Link link, ShopingList shopingList) {
-        HttpPost httpRequest = new HttpPost(HOST + "/api/save");
-        httpRequest.setHeader("Content-Type", "text/binary");
-        httpRequest.setHeader("login", user.getName());
-        httpRequest.setHeader("password", user.getPassword());
-        httpRequest.setHeader("listname", shopingList.getName());
-        try {
-            objectOutputStream = new ObjectOutputStream(
-                    new FileOutputStream("temp_serial_item"));
-
-            Objects.requireNonNull(objectOutputStream).writeObject(shopingList);
-            objectOutputStream.close();
-        } catch (IOException e) {
-            System.out.println("Не удается записать файл");
-            e.printStackTrace();
-        }
-
-        FileEntity bin = new FileEntity(new File("temp_serial_item"));
-        httpRequest.setEntity(bin);
-        try {
-            res = client.execute(httpRequest);
-            entity = res.getEntity();
-            EntityUtils.consume(entity);
-            res.close();
-        } catch (IOException e) {
-            System.out.println("Не удается закрыть соединение");
-            e.printStackTrace();
-        }
-        return res.getStatusLine().getStatusCode() == 200;
     }
 
 
@@ -128,13 +85,11 @@ public class ShopingNet implements Connection {
             System.out.println("Не удается закрыть соединение");
             e.printStackTrace();
         }
-//        System.out.println(Objects.requireNonNull(res).getStatusLine());
         return res.getStatusLine().getStatusCode() == 200;
     }
 
     @Override
-    public String create(User user, ShopingList shopingList) {
-
+    public String save(User user, ShopingList shopingList) {
         try {
             objectOutputStream = new ObjectOutputStream(
                     new FileOutputStream("temp_serial_item"));
@@ -159,12 +114,6 @@ public class ShopingNet implements Connection {
         HttpResponse httpresponse = null;
         try {
             httpresponse = httpclient.execute(multipartRequest);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            System.out.println(EntityUtils.toString(httpresponse.getEntity()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -208,14 +157,12 @@ public class ShopingNet implements Connection {
         httpRequest.setHeader("Content-Type", "text/binary");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
-
         try {
             res = client.execute(httpRequest);
         } catch (IOException e) {
             System.out.println("Не удается выполнить запрос");
             e.printStackTrace();
         }
-
         HttpEntity entity = Objects.requireNonNull(res).getEntity();
         String responseString = null;
         try {
@@ -226,8 +173,6 @@ public class ShopingNet implements Connection {
             System.out.println("Не удается закрыть соединение");
             e.printStackTrace();
         }
-
         return Objects.requireNonNull(responseString).contains("EEXIST") || responseString.equals("true");
-
     }
 }
