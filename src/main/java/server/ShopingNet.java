@@ -1,13 +1,22 @@
 package server;
 
 import entites.*;
+import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import entites.ShopingList;
 
@@ -43,13 +52,13 @@ public class ShopingNet implements Connection {
 //        System.out.println(responseString);
         String[] array = responseString.substring(1, responseString.length() - 1).split(",", -1);
         List<Link> lst = new ArrayList<>();
-        if (responseString.equals("[]")){
+        if (responseString.equals("[]")) {
             System.out.println("Zero list");
             return lst;
         }
         for (String el : array) {
             Link link = new Link();
-            link.setRemote(el.substring(1,el.length() - 1));
+            link.setRemote(el.substring(1, el.length() - 1));
             lst.add(link);
         }
         try {
@@ -125,11 +134,6 @@ public class ShopingNet implements Connection {
 
     @Override
     public String create(User user, ShopingList shopingList) {
-        HttpPost httpRequest = new HttpPost(HOST + "/api/save");
-        httpRequest.setHeader("Content-Type", "application/octet-stream");
-        httpRequest.setHeader("login", user.getName());
-        httpRequest.setHeader("password", user.getPassword());
-        httpRequest.setHeader("listname", shopingList.getName());
 
         try {
             objectOutputStream = new ObjectOutputStream(
@@ -141,19 +145,30 @@ public class ShopingNet implements Connection {
             e.printStackTrace();
         }
 
-        FileEntity bin = new FileEntity(new File("temp_serial_item"));
-        httpRequest.setEntity(bin);
-        String responseString = "";
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        MultipartEntityBuilder entitybuilder = MultipartEntityBuilder.create();
+        entitybuilder.addBinaryBody(shopingList.getName(), new File("temp_serial_item"));
+        HttpEntity mutiPartHttpEntity = entitybuilder.build();
+        RequestBuilder reqbuilder= RequestBuilder.post(HOST + "/api/save");
+        reqbuilder.addHeader("login", user.getName());
+        reqbuilder.addHeader("password", user.getPassword());
+        reqbuilder.addHeader("listname", shopingList.getName());
+        reqbuilder.setEntity(mutiPartHttpEntity);
+        HttpUriRequest multipartRequest = reqbuilder.build();
+
+        HttpResponse httpresponse = null;
         try {
-            res = client.execute(httpRequest);
-            entity = res.getEntity();
-            responseString = EntityUtils.toString(entity, "UTF-8");
-            EntityUtils.consume(entity);
-            res.close();
+            httpresponse = httpclient.execute(multipartRequest);
         } catch (IOException e) {
-            System.out.println("Не удается закрыть соединение");
             e.printStackTrace();
         }
+
+        try {
+            System.out.println(EntityUtils.toString(httpresponse.getEntity()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println(responseString);
         return HOST + "/api/glist/" + responseString;
     }
 
