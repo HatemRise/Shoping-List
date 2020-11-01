@@ -55,4 +55,9 @@ public class Link implements Serializable {
     public String toString(){
         return this.name == null ? this.remote : this.name;
     }
+
+    @Override
+    public int hashCode(){
+        return this.remote.hashCode() + this.local.hashCode() + this.name.hashCode();
+    }
 }
