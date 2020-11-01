@@ -32,8 +32,7 @@ import server.ShopingNet;
 
 import java.io.*;
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Controller implements Initializable {
@@ -83,7 +82,6 @@ public class Controller implements Initializable {
         if(this.settings.getUser() != null) {
             listLinks.getItems().addAll(this.settings.getUser().getLists());
         }
-        testDataList();
         listView.setContextEvent(action -> itemContext(action));
         listView.setContextGroupEvent(action -> groupContext(action));
         listView.selectedProperty().addListener(action -> {
@@ -93,31 +91,6 @@ public class Controller implements Initializable {
                 selectedItemProperty(true);
             }
         });
-        itemGroupSwitcher.getItems().add(new Group("Empty"));
-        itemGroupSwitcher.getItems().addAll(list.getGroups());
-    }
-    /**Метод, который слишком надолго прижился в этой проге.
-     * Заполняет LitView тестовыми данными. Будет удалён, когда будет
-     * возможность сделать полноценный лист*/
-    private void testDataList(){
-        list = new ShopingList("test");
-        for(int i = 0 ; i < 3; i++) {
-            Item item = new Item("name" + i);
-            item.setQuantity(12 + i);
-            item.setDescription("description" + i);
-            list.addItem(item);
-        }
-        for(int j = 0 ; j < 3; j++) {
-            Group group = new Group("name" + String.valueOf(j));
-            for (int i = 0; i < 3; i++) {
-                Item item = new Item("groupItem" + String.valueOf(i + j));
-                item.setQuantity(12 + i);
-                item.setDescription("description" + String.valueOf(i + j));
-                item.setGroup(group);
-                list.addItem(item);
-            }
-        }
-        listView.getItems().addAll(list.getList());
     }
     /**Метод вешает слуштели на обёрнутый объект Item.
      * На вход принимает обёрнутый Item HBoxItem*/
@@ -244,12 +217,30 @@ public class Controller implements Initializable {
     /**Метод для вызова логин окна, или метода для коннекта,
      * в зависимости от нличия пользовательских данных*/
     public void logIn() {
+        listLinks.getItems().clear();
         if(emptyUser()) {
             showLogInWindow(null);
         } else {
             connect();
         }
     }
+
+    private void getLocalLinks() {
+        File folder = new File("/lists/" + settings.getUser().getName());
+        if(folder.list() != null) {
+            List<String> links = Arrays.asList(folder.list(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".shllf");
+                }
+            }));
+            links.parallelStream().forEach(link -> {
+                settings.getUser().addLink(new Link(null, (folder.getPath() + link), link.substring(0, link.length() - 6)));
+            });
+            listLinks.getItems().addAll(settings.getUser().getLists());
+        }
+    }
+
     /**Метод для закрытия главного окна(приводит к выходу из приложения)*/
     public void exit(){
         primaryStage.close();
@@ -259,6 +250,10 @@ public class Controller implements Initializable {
      * из объекта Settings*/
     public void logOut(){
         this.settings.setUser(null);
+        this.listLinks.getItems().clear();
+        this.list = null;
+        this.listView.getItems().clear();
+        this.itemGroupSwitcher.getItems().clear();
     }
     public void save(Event event){
         if(this.settings.getUser() == null){
@@ -270,7 +265,7 @@ public class Controller implements Initializable {
     }
 
     public void saveLocal() {
-        File localShopingListFile = new File("/lists/" + list.getName() + ".shllf");
+        File localShopingListFile = new File("/lists/" + settings.getUser().getName() + "/" + list.getName() + ".shllf");
         try {
             FileOutputStream localStorage = new FileOutputStream(localShopingListFile);
             ObjectOutputStream listObject = new ObjectOutputStream(localStorage);
@@ -425,6 +420,7 @@ public class Controller implements Initializable {
             listView.getItems().add(0, item);
             listView.setSelected(-1);
             listView.setSelected(0);
+            list.addItem(item);
         }
     }
 
@@ -522,6 +518,10 @@ public class Controller implements Initializable {
             showLogInWindow("Please log in for continue");
             return;
         } else {
+            if(listLinks.getValue().getRemote().isEmpty()) {
+                getLocal();
+                return;
+            }
             File file = connect.getList(settings.getUser(), listLinks.getValue());
             FileInputStream in = new FileInputStream(file);
             ObjectInputStream remoteList = new ObjectInputStream(in);
@@ -698,7 +698,13 @@ public class Controller implements Initializable {
      * Если сервер навернётся и ничего не вернёт, то мы об этом даже
      * не узнаем. Держу в курсе*/
     public void connect(){
+        getLocalLinks();
         List<Link> response = connect.logIn(this.settings.getUser());
+        this.settings.getUser().getLists().parallelStream()
+                .forEach(item -> {
+                    Optional<Link> temp = response.parallelStream().filter(res -> res.getName().equals(item.getName())).findFirst();
+                    if(!temp.isEmpty()) item.setRemote(temp.get().getRemote());
+                });
         this.settings.getUser().setLists(response);
         listLinks.getItems().addAll(response);
     }
