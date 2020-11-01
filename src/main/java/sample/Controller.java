@@ -32,6 +32,9 @@ import server.ShopingNet;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -235,7 +238,7 @@ public class Controller implements Initializable {
                 }
             }));
             links.parallelStream().forEach(link -> {
-                settings.getUser().addLink(new Link(null, (folder.getPath() + link), link.substring(0, link.length() - 6)));
+                settings.getUser().addLink(new Link(null, (folder.getPath() + "/" + link), link.substring(0, link.length() - 6)));
             });
             listLinks.getItems().addAll(settings.getUser().getLists());
         }
@@ -260,6 +263,9 @@ public class Controller implements Initializable {
             showLogInWindow("Please log in for continue");
             return;
         }
+        if(this.list == null){
+            return;
+        }
         saveLocal();
         saveRemote();
     }
@@ -279,13 +285,12 @@ public class Controller implements Initializable {
             listLinks.getValue().setLocal(localShopingListFile.getPath());
         } catch (FileNotFoundException e){
             try {
-                localShopingListFile.createNewFile();
-                saveLocal();
-            }catch (IOException ex){
-                File folder = new File("/lists");
-                folder.mkdir();
-                saveLocal();
+                Files.createDirectories(Paths.get("/lists/" + settings.getUser().getName()));
+            } catch (IOException ioException) {
+                System.out.println("");
             }
+            System.out.println("Folder: lists/" +  settings.getUser().getName() + " created");
+            saveLocal();
         } catch (IOException e) {
             System.out.println("IO Error: Object stream not created!");
         }
@@ -386,6 +391,9 @@ public class Controller implements Initializable {
 
     VBox addSelectRoot = new VBox();
     public void addSelect(Event event){
+        if(this.list == null){
+            return;
+        }
         if(mainPane.getChildren().contains(addSelectRoot)){
             return;
         }
@@ -518,7 +526,7 @@ public class Controller implements Initializable {
             showLogInWindow("Please log in for continue");
             return;
         } else {
-            if(listLinks.getValue().getRemote().isEmpty()) {
+            if(listLinks.getValue().getRemote() == null || listLinks.getValue().getRemote().isBlank()) {
                 getLocal();
                 return;
             }
@@ -569,7 +577,7 @@ public class Controller implements Initializable {
         listView.clear();
         itemGroupSwitcher.getItems().clear();
         itemGroupSwitcher.getItems().add(new Group("Empty"));
-        File shopingList = new File(listLinks.getValue().getLocal());
+        File shopingList = new File(listLinks.getValue().getLocal() + "/");
         try {
             FileInputStream in = new FileInputStream(shopingList);
             ObjectInputStream oin = new ObjectInputStream(in);
@@ -704,9 +712,12 @@ public class Controller implements Initializable {
         this.settings.getUser().getLists().parallelStream()
                 .forEach(item -> {
                     Optional<Link> temp = response.parallelStream().filter(res -> res.getName().equals(item.getName())).findFirst();
-                    if(!temp.isEmpty()) item.setRemote(temp.get().getRemote());
+                    if(!temp.isEmpty()){
+                        item.setRemote(temp.get().getRemote());
+                        response.remove(temp);
+                    }
                 });
-        this.settings.getUser().setLists(response);
+        this.settings.getUser().getLists().addAll(response);
         listLinks.getItems().addAll(response);
     }
     /**Очередной костыль. На этот раз уже для получения данных из

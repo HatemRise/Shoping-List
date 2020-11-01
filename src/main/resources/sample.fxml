@@ -24,7 +24,7 @@
          <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="928.0" styleClass="topBox">
             <children>
                <JFXButton fx:id="share" onAction="#share" prefHeight="25.0" prefWidth="25.0" text="-" />
-               <JFXComboBox fx:id="listLinks" prefHeight="23.0" prefWidth="211.0" />
+               <JFXComboBox fx:id="listLinks" labelFloat="true" prefHeight="23.0" prefWidth="211.0" promptText="Chose list..." />
                <JFXButton fx:id="newList" onAction="#addList" prefHeight="25.0" prefWidth="25.0" text="+" />
                <Region prefHeight="25.0" prefWidth="269.0" />
                <JFXButton maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#minimizeWindow" prefHeight="24.0" prefWidth="24.0" styleClass="minimizeButton" text="-">
