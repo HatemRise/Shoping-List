@@ -40,10 +40,13 @@ public class ShopingNet implements Connection {
             System.out.println("Не удается выполнить запрос");
             e.printStackTrace();
         }
-        System.out.println(responseString);
+//        System.out.println(responseString);
         String[] array = responseString.substring(1, responseString.length() - 1).split(",", -1);
-
         List<Link> lst = new ArrayList<>();
+        if (responseString.equals("[]")){
+            System.out.println("Zero list");
+            return lst;
+        }
         for (String el : array) {
             Link link = new Link();
             link.setRemote(el.substring(1,el.length() - 1));
@@ -95,10 +98,11 @@ public class ShopingNet implements Connection {
     @Override
     public boolean delete(User user, Link link) {
         HttpPost httpRequest = new HttpPost(HOST + "/api/remove");
+        String parsedLink = link.getRemote().split("http://77.222.54.80:5606/api/glist/\\w+/")[1];
         httpRequest.setHeader("Content-Type", "text/binary");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
-        httpRequest.setHeader("listname", link.getRemote());
+        httpRequest.setHeader("listname", parsedLink);
         CloseableHttpResponse res = null;
         try {
             res = client.execute(httpRequest);
@@ -107,7 +111,6 @@ public class ShopingNet implements Connection {
             e.printStackTrace();
         }
 
-        System.out.println(Objects.requireNonNull(res).getStatusLine());
         entity = res.getEntity();
         try {
             EntityUtils.consume(entity);
@@ -116,6 +119,7 @@ public class ShopingNet implements Connection {
             System.out.println("Не удается закрыть соединение");
             e.printStackTrace();
         }
+//        System.out.println(Objects.requireNonNull(res).getStatusLine());
         return res.getStatusLine().getStatusCode() == 200;
     }
 
@@ -150,12 +154,12 @@ public class ShopingNet implements Connection {
             System.out.println("Не удается закрыть соединение");
             e.printStackTrace();
         }
-        return HOST + "/api/getlist/" + responseString;
+        return HOST + "/api/glist/" + responseString;
     }
 
     @Override
     public File getList(User user, Link link) {
-        String lnk = HOST + "/api/glist/" + link.getRemote();
+        String lnk = link.getRemote();
         HttpGet httpRequest = new HttpGet(lnk);
         httpRequest.setHeader("Content-Type", "text/binary");
         try {
@@ -184,7 +188,8 @@ public class ShopingNet implements Connection {
 
     @Override
     public boolean addToMyLists(User user, Link link) {
-        HttpPost httpRequest = new HttpPost(HOST + "/api/share/" + link.getRemote());
+        String parsedLink = link.getRemote().split("http://77.222.54.80:5606/api/glist/")[1];
+        HttpPost httpRequest = new HttpPost(HOST + "/api/share/" + parsedLink);
         httpRequest.setHeader("Content-Type", "text/binary");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());

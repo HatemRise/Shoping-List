@@ -19,7 +19,7 @@ target/
 *.iml
 *.ipr
 out/
-
+temp_serial_item
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
