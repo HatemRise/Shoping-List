@@ -29,11 +29,9 @@ import javafx.stage.StageStyle;
 import server.Connection;
 import entites.ShopingList;
 import server.ShopingNet;
-
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -190,7 +188,6 @@ public class Controller implements Initializable {
             List<Item> temp = listView.getItems().parallelStream().filter(item -> item.getGroup() != null
                     && item.getGroup().getName().equals(((ShopingListGroupCell)event.getSource()).getName().getText())).collect(Collectors.toList());
             temp.stream().forEachOrdered(item -> {
-                list.getGroups().remove(item.getGroup());
                 itemGroupSwitcher.getItems().remove(item.getGroup());
                 item.setGroup(null);
                 listView.groupChange(item);
@@ -381,11 +378,7 @@ public class Controller implements Initializable {
             showLogInWindow("Please log in for continue");
             return;
         } else {
-            if(listLinks.getValue() != null && listLinks.getValue().getRemote() != null && listLinks.getValue().getRemote().length() > 1){
-                connect.change(settings.getUser(), listLinks.getValue(), list);
-            } else {
-                connect.create(this.settings.getUser(), list);
-            }
+            connect.save(this.settings.getUser(), list);
         }
     }
 
@@ -428,7 +421,7 @@ public class Controller implements Initializable {
             listView.getItems().add(0, item);
             listView.setSelected(-1);
             listView.setSelected(0);
-            list.addItem(item);
+            list.addItem(0, item);
         }
     }
 
@@ -466,6 +459,7 @@ public class Controller implements Initializable {
 
             } else {
                 listView.getCells().add(new ShopingListGroupCell(groupNameField.getText()));
+                list.getGroups().add(new Group(groupNameField.getText()));
                 itemGroupSwitcher.getItems().add(new Group(groupNameField.getText()));
                 group.close();
             }
@@ -712,13 +706,14 @@ public class Controller implements Initializable {
         this.settings.getUser().getLists().parallelStream()
                 .forEach(item -> {
                     Optional<Link> temp = response.parallelStream().filter(res -> res.getName().equals(item.getName())).findFirst();
-                    if(!temp.isEmpty()){
+                    if (!temp.isEmpty()) {
                         item.setRemote(temp.get().getRemote());
-                        response.remove(temp);
+                        response.remove(temp.get());
                     }
                 });
         this.settings.getUser().getLists().addAll(response);
-        listLinks.getItems().addAll(response);
+        listLinks.getItems().clear();
+        listLinks.getItems().addAll(this.settings.getUser().getLists());
     }
     /**Очередной костыль. На этот раз уже для получения данных из
      * Логин формы при нажатии на кнопку Log In*/
