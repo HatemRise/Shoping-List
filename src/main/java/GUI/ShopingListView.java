@@ -215,5 +215,6 @@ public class ShopingListView extends VBox {
     public void clear(){
         this.items.clear();
         this.cells.clear();
+        this.selected.set(-1);
     }
 }

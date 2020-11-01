@@ -31,6 +31,7 @@ public class Link implements Serializable {
 
     public void setRemote(String remote) {
         this.remote = remote;
+        this.name = remote.substring(remote.indexOf('-') + 1, remote.length()-6);
     }
 
     public String getLocal() {

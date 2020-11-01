@@ -270,7 +270,7 @@ public class Controller implements Initializable {
     }
 
     public void saveLocal() {
-        File localShopingListFile = new File("/lists/" + list.getName());
+        File localShopingListFile = new File("/lists/" + list.getName() + ".shllf");
         try {
             FileOutputStream localStorage = new FileOutputStream(localShopingListFile);
             ObjectOutputStream listObject = new ObjectOutputStream(localStorage);
@@ -338,6 +338,7 @@ public class Controller implements Initializable {
                 this.listView.clear();
                 this.listView.getItems().addAll(list.getList());
                 itemGroupSwitcher.getItems().clear();
+                itemGroupSwitcher.getItems().add(new Group("Empty"));
                 itemGroupSwitcher.getItems().addAll(list.getGroups());
                 group.close();
             }
@@ -530,6 +531,7 @@ public class Controller implements Initializable {
             listView.clear();
             listView.getItems().addAll(list.getList());
             itemGroupSwitcher.getItems().clear();
+            itemGroupSwitcher.getItems().add(new Group("Empty"));
             itemGroupSwitcher.getItems().addAll(list.getGroups());
         }
     }
@@ -539,7 +541,11 @@ public class Controller implements Initializable {
             showLogInWindow("Please log in for continue");
             return;
         } else {
-            connect.delete(settings.getUser(), listLinks.getValue());
+            if(connect.delete(settings.getUser(), listLinks.getValue())){
+                int index = this.settings.getUser().getLists().lastIndexOf(listLinks.getValue());
+                this.settings.getUser().getList(index).setRemote(null);
+                listLinks.getValue().setRemote(null);
+            }
         }
     }
     /**Метод для ресета листа. Shopinglist должен удаляться из локального
@@ -553,7 +559,26 @@ public class Controller implements Initializable {
             if(shopingList.exists())shopingList.delete();
             connect.getList(this.settings.getUser(), listLinks.getValue());
             saveLocal();
+            getLocal();
         }
+    }
+
+    private void getLocal(){
+        list = null;
+        listView.clear();
+        itemGroupSwitcher.getItems().clear();
+        itemGroupSwitcher.getItems().add(new Group("Empty"));
+        File shopingList = new File(listLinks.getValue().getLocal());
+        try {
+            FileInputStream in = new FileInputStream(shopingList);
+            ObjectInputStream oin = new ObjectInputStream(in);
+            list = (ShopingList) oin.readObject();
+            listView.getItems().addAll(list.getList());
+            itemGroupSwitcher.getItems().addAll(list.getGroups());
+        }catch (Exception e){
+            System.out.println("Error: can not get local list");
+        }
+
     }
     VBox deleteSelectRoot = new VBox();
     public void deleteSelect(Event event){
@@ -576,17 +601,31 @@ public class Controller implements Initializable {
         mainPane.getChildren().add(deleteSelectRoot);
         deleteLocal.setOnAction(actionEvent -> {
             deleteSelectRoot.getChildren().clear();
+            deleteLocal();
         });
         deleteRemote.setOnAction(actionEvent -> {
             deleteSelectRoot.getChildren().clear();
+            deleteRemoteFile();
         });
         deleteRemoteAndLocal.setOnAction(actionEvent -> {
             deleteSelectRoot.getChildren().clear();
+            deleteRemoteFile();
+            deleteLocal();
         });
         deleteSelectRoot.setOnMouseExited(action -> {
             mainPane.getChildren().remove(deleteSelectRoot);
             deleteSelectRoot.getChildren().clear();
         });
+    }
+
+    public void deleteLocal(){
+        File shopingList = new File(listLinks.getValue().getLocal());
+        shopingList.delete();
+        this.settings.getUser().getLists().remove(listLinks.getValue());
+        listLinks.getValue().setLocal(null);
+        list = null;
+        listView.clear();
+        itemGroupSwitcher.getItems().clear();
     }
 
     /**Метод для получения изменений из удалённой версии редактируемого
