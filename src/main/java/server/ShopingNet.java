@@ -126,7 +126,7 @@ public class ShopingNet implements Connection {
     @Override
     public String create(User user, ShopingList shopingList) {
         HttpPost httpRequest = new HttpPost(HOST + "/api/save");
-        httpRequest.setHeader("Content-Type", "text/binary");
+        httpRequest.setHeader("Content-Type", "application/octet-stream");
         httpRequest.setHeader("login", user.getName());
         httpRequest.setHeader("password", user.getPassword());
         httpRequest.setHeader("listname", shopingList.getName());
@@ -161,7 +161,7 @@ public class ShopingNet implements Connection {
     public File getList(User user, Link link) {
         String lnk = link.getRemote();
         HttpGet httpRequest = new HttpGet(lnk);
-        httpRequest.setHeader("Content-Type", "text/binary");
+        httpRequest.setHeader("Content-Type", "application/octet-stream");
         try {
             res = client.execute(httpRequest);
         } catch (IOException e) {

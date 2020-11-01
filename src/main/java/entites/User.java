@@ -16,7 +16,7 @@ public class User implements Serializable {
         lists = new ArrayList<Link>();
     }
 
-    public List getLists() {
+    public List<Link> getLists() {
         return lists;
     }
 

@@ -21,6 +21,12 @@ public class Link implements Serializable {
         this.local = local;
     }
 
+    public Link(String remote, String local, String name) {
+        this.remote = remote;
+        this.local = local;
+        this.name = name;
+    }
+
     public String getRemote() {
         return remote;
     }
@@ -32,6 +38,10 @@ public class Link implements Serializable {
     public void setRemote(String remote) {
         this.remote = remote;
         this.name = remote.substring(remote.indexOf('-') + 1, remote.length()-6);
+    }
+
+    public String getName(){
+        return this.name;
     }
 
     public String getLocal() {

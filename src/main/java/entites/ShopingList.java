@@ -12,10 +12,10 @@ import java.util.stream.Collectors;
 public class ShopingList extends Entity implements Serializable {
     public final static int serialVersionUID = 4;
     private String name;
-    private List<Item> items = new ArrayList<Item>();
-    private List<Group> groups = new ArrayList<Group>();
+    private ArrayList<Item> items = new ArrayList<Item>();
+    private ArrayList<Group> groups = new ArrayList<Group>();
 
-    public ShopingList(String name, List items) {
+    public ShopingList(String name, ArrayList items) {
         this.name = name;
         this.items = items;
         getItemsGroups();
@@ -67,7 +67,7 @@ public class ShopingList extends Entity implements Serializable {
         return this.items;
     }
 
-    public void setList(List<Item> items){
+    public void setList(ArrayList<Item> items){
         this.items = items;
     }
 
